@@ -13,9 +13,9 @@ def agregar_producto(request):
             return redirect("mis_productos")  # redirigir a la lista de productos del vendedor
     else:
         form = ProductoForm()
-    return render(request, "productos/agregar_producto.html", {"form": form})
+    return render(request, "forms/agregar_productos.html", {"form": form})
 
 @login_required
 def mis_productos(request):
     productos = request.user.productos.all()
-    return render(request, "productos/mis_productos.html", {"productos": productos})
+    return render(request, "manejoProductos/mis_productos.html", {"productos": productos})
