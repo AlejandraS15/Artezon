@@ -1,8 +1,6 @@
 from django.urls import path
-from .views import ProductListView
-
-app_name = "productos"
+from . import views
 
 urlpatterns = [
-    path("", ProductListView.as_view(), name="list"),
+    path("", views.home, name="home"),  # 👈 aquí se define el name="home"
 ]

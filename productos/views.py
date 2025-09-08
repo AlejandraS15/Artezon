@@ -1,52 +1,58 @@
 from django.shortcuts import render
-from decimal import Decimal, InvalidOperation
-from django.views.generic import ListView
+from django.db.models import Q
+
 from .models import Product
 
-class ProductListView(ListView):
-    model = Product
-    template_name = "productos/product_list.html"
-    context_object_name = "products"
-    paginate_by = 12
 
-    def get_queryset(self):
-        qs = Product.objects.filter(is_active=True, stock__gt=0)
-        material = self.request.GET.get("material")
-        color = self.request.GET.get("color")
-        price_min = self.request.GET.get("price_min")
-        price_max = self.request.GET.get("price_max")
+def home(request):
+    """
+    Vista principal que muestra barra de búsqueda,
+    filtros y productos disponibles.
+    """
 
-        if material:
-            qs = qs.filter(material__iexact=material)
-        if color:
-            qs = qs.filter(color__iexact=color)
-        if price_min:
-            try:
-                qs = qs.filter(price__gte=Decimal(price_min))
-            except (InvalidOperation, TypeError):
-                pass
-        if price_max:
-            try:
-                qs = qs.filter(price__lte=Decimal(price_max))
-            except (InvalidOperation, TypeError):
-                pass
+    query = request.GET.get("q", "")
+    material = request.GET.get("material", "")
+    color = request.GET.get("color", "")
+    price_min = request.GET.get("price_min", "")
+    price_max = request.GET.get("price_max", "")
 
-        return qs
+    productos = Product.objects.all()
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["materials"] = (
-            Product.objects.filter(is_active=True).exclude(material="")
-            .values_list("material", flat=True).distinct().order_by("material")
+    if query:
+        productos = productos.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
         )
-        ctx["colors"] = (
-            Product.objects.filter(is_active=True).exclude(color="")
-            .values_list("color", flat=True).distinct().order_by("color")
-        )
-        ctx["current_filters"] = {
-            "material": self.request.GET.get("material", ""),
-            "color": self.request.GET.get("color", ""),
-            "price_min": self.request.GET.get("price_min", ""),
-            "price_max": self.request.GET.get("price_max", ""),
-        }
-        return ctx
+
+    if material:
+        productos = productos.filter(material=material)
+
+    if color:
+        productos = productos.filter(color=color)
+
+    if price_min:
+        productos = productos.filter(price__gte=price_min)
+
+    if price_max:
+        productos = productos.filter(price__lte=price_max)
+
+    materiales = Product.objects.values_list(
+        "material", flat=True
+    ).distinct()
+    colores = Product.objects.values_list(
+        "color", flat=True
+    ).distinct()
+
+    context = {
+        "productos": productos,
+        "current_filters": {
+            "q": query,
+            "material": material,
+            "color": color,
+            "precio_min": price_min,
+            "precio_max": price_max,
+        },
+        "materiales": materiales,
+        "colores": colores,
+    }
+    return render(request, "productos/home.html", context)

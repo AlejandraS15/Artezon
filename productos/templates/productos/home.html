@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+
+  <!-- 🔍 Barra de búsqueda y filtros -->
+  <form method="get" class="mb-4">
+
+    <!-- Barra de búsqueda -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <input 
+          type="text" 
+          name="q" 
+          class="form-control rounded-pill border-success" 
+          placeholder="Buscar productos..."
+          value="{{ current_filters.q }}"
+        >
+      </div>
+    </div>
+
+    <!-- Filtros + Botones -->
+    <div class="row g-2 align-items-center">
+      <div class="col-md-3">
+        <select name="material" class="form-select">
+          <option value="">Todos los materiales</option>
+          {% for m in materiales %}
+            <option value="{{ m }}" {% if m == current_filters.material %}selected{% endif %}>
+              {{ m }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <select name="color" class="form-select">
+          <option value="">Todos los colores</option>
+          {% for c in colores %}
+            <option value="{{ c }}" {% if c == current_filters.color %}selected{% endif %}>
+              {{ c }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <input 
+          type="number" 
+          name="price_min" 
+          class="form-control"
+          placeholder="Price mín." 
+          value="{{ current_filters.price_min }}"
+          min="0"
+          step="10000"
+        >
+      </div>
+
+      <div class="col-md-2">
+        <input 
+          type="number" 
+          name="price_max" 
+          class="form-control"
+          placeholder="Price máx." 
+          value="{{ current_filters.price_max }}"
+          min="0"
+          step="10000"
+        >
+      </div>
+
+      <div class="col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-success w-50">Filtrar</button>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary w-50">Limpiar</a>
+      </div>
+    </div>
+  </form>
+
+  <!-- 📦 Productos -->
+  <div class="row g-4">
+    {% for producto in productos %}
+      <div class="col-md-4 col-lg-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title text-success">{{ producto.name }}</h5>
+            <p class="card-text text-muted">{{ producto.description|truncatechars:100 }}</p>
+            <p><strong>Material:</strong> {{ producto.material }}</p>
+            <p><strong>Color:</strong> {{ producto.color }}</p>
+            <p><strong>Precio:</strong> ${{ producto.price }}</p>
+            <p><small class="text-muted">Stock: {{ producto.stock }}</small></p>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <p class="text-center text-muted">No se encontraron productos.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- 📑 Paginación -->
+  {% if is_paginated %}
+    <nav class="pagination justify-content-center mt-4" aria-label="Paginación">
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-success me-2" href="?page={{ page_obj.previous_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Anterior</a>
+      {% endif %}
+
+      <span class="align-self-center mx-2">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+      {% if page_obj.has_next %}
+        <a class="btn btn-outline-success ms-2" href="?page={{ page_obj.next_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Siguiente</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+
+</div>
+{% endblock %}
