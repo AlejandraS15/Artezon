@@ -1,198 +1,53 @@
-/* 🎨 Paleta de colores Artezon */
-:root {
-    --color-marron: #8B5E3C;   /* Marrón cálido (principal) */
-    --color-marron-claro: #C7A17A; /* Marrón claro para fondos */
-    --color-verde: #3E6B48;   /* Verde artesanal */
-    --color-verde-claro: #A3C9A8; /* Verde suave para detalles */
-    --color-crema: #FAF6F0;   /* Fondo neutro */
-    --color-texto: #2E2E2E;   /* Texto principal */
-}
-
-/* 🔤 Tipografía */
-body {
-    font-family: 'Libre Baskerville', serif;  /* elegante y artesanal */
-    background-color: var(--color-crema);
-    color: var(--color-texto);
-    margin: 0;
-    padding: 0;
-}
-
-/* 🟤 Navbar */
-.navbar {
-    background-color: var(--color-marron);
-    padding: 1rem 2rem;
-}
-
-.navbar a {
-    color: white;
-    text-decoration: none;
-    margin: 0 1rem;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.navbar a:hover {
-    color: var(--color-verde-claro);
-}
-
-/* 🌱 Botones */
-.button, .btn {
-    background-color: var(--color-verde);
-    color: white;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.button:hover, .btn:hover {
-    background-color: var(--color-marron);
-}
-
-/* 📦 Cards de productos */
-.card {
+/* 🔐 Formularios de login y registro */
+.auth-container {
+    max-width: 400px;
+    margin: 3rem auto;
+    padding: 2rem;
     background-color: white;
     border: 1px solid var(--color-marron-claro);
-    border-radius: 10px;
-    padding: 1rem;
-    margin: 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.card:hover {
-    transform: scale(1.02);
-}
-
-/* 📝 Titulos */
-h1, h2, h3, h4, h5 {
-    color: var(--color-marron);
-    font-family: 'Libre Baskerville', serif;
-}
-
-/* 📌 Footer */
-footer {
-    background-color: var(--color-verde);
-    color: white;
-    padding: 2rem;
+.auth-container h2 {
     text-align: center;
-    margin-top: 3rem;
+    margin-bottom: 1rem;
+    color: var(--color-marron); 
 }
 
-footer a {
-    color: var(--color-marron-claro);
+.auth-container .form-group {
+    margin-bottom: 1rem;
+}
+
+.auth-container label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: bold;
+    color: var(--color-marron);
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid var(--color-marron-claro);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.error-messages {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.auth-container .link {
+    color: var(--color-verde);
+    font-weight: 600;
     text-decoration: none;
 }
 
-footer a:hover {
-    color: var(--color-crema);
-}
-/* 🛍️ Página de productos */
-.productos-page h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-}
-
-.filters {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.filters label {
-    font-weight: bold;
-    margin-bottom: .3rem;
-    display: block;
-}
-
-.filters input, .filters select {
-    border: 1px solid var(--color-marron-claro);
-    padding: .5rem;
-    border-radius: 6px;
-    width: 100%;
-}
-
-.grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-}
-
-.pagination {
-    margin-top: 2rem;
-}
-/* Barra de búsqueda */
-.search-row {
-  margin-bottom: 1rem;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-}
-
-/* Fila de filtros + botones */
-.filters-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.8rem;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-/* Botones */
-.buttons-row {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.btn-filtrar {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.btn-filtrar:hover {
-  background-color: #43a047;
-}
-
-.btn-limpiar {
-  background-color: #e0e0e0;
-  color: #333;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.btn-limpiar:hover {
-  background-color: #d6d6d6;
-}
-
-/* Tarjetas de productos */
-.productos-lista {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.producto-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  background-color: white;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-.card-title.text-brown {
-    color: #8B4513;
-    font-weight: bold;
+.auth-container .link:hover {
+    color: var(--color-marron);
 }
