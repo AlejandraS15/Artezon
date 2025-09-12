@@ -1,23 +1,48 @@
 from django import forms
-from .models import Producto
+from productos.models import Product  # Importa el modelo correcto
 
 class ProductoForm(forms.ModelForm):
-    nombre = forms.CharField(
+    name = forms.CharField(
         label="Nombre del producto",
         widget=forms.TextInput(attrs={
             "class": "form-control",
             "placeholder": "Ejemplo: Bufanda tejida"
         }),
     )
-    descripcion = forms.CharField(
+    description = forms.CharField(
         label="Descripción",
         widget=forms.Textarea(attrs={
             "class": "form-control",
             "placeholder": "Describe tu producto",
             "rows": 3
         }),
+        required=False,
     )
-    precio = forms.DecimalField(
+    category = forms.CharField(
+        label="Categoría",
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Ejemplo: Ropa"
+        }),
+        required=False,
+    )
+    material = forms.CharField(
+        label="Material",
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Ejemplo: Algodón"
+        }),
+        required=False,
+    )
+    color = forms.CharField(
+        label="Color",
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Ejemplo: Beige"
+        }),
+        required=False,
+    )
+    price = forms.DecimalField(
         label="Precio",
         widget=forms.NumberInput(attrs={
             "class": "form-control",
@@ -40,5 +65,8 @@ class ProductoForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Producto
-        fields = ['nombre', 'descripcion', 'precio', 'stock', 'imagen']
+        model = Product
+        fields = [
+            'name', 'description', 'category', 'material', 'color',
+            'price', 'stock', 'imagen'
+        ]

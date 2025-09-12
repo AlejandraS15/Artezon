@@ -3,22 +3,38 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <h2 class="mb-4 text-center">Mis Productos</h2>
-            <ul class="list-group">
+            <div class="row">
                 {% for producto in productos %}
-                    <li class="list-group-item d-flex align-items-center justify-content-between">
-                        <div>
-                            <strong>{{ producto.nombre }}</strong> - ${{ producto.precio }}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm p-2">
                             {% if producto.imagen %}
-                                <img src="{{ producto.imagen.url }}" width="80" class="ms-3 rounded" alt="Imagen de producto">
+                                <div class="p-2">
+                                    <img src="{{ producto.imagen.url }}" class="card-img-top rounded" alt="Imagen de producto" style="object-fit:cover; height:200px;">
+                                </div>
+                            {% else %}
+                                <div class="card-img-top d-flex align-items-center justify-content-center p-2" style="height:200px; background:#f5e9da;">
+                                    <span class="text-muted">Sin imagen</span>
+                                </div>
                             {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ producto.name }}</h5>
+                                <p class="card-text mb-1"><strong>Descripción:</strong> {{ producto.description }}</p>
+                                <p class="card-text mb-1"><strong>Categoría:</strong> {{ producto.category }}</p>
+                                <p class="card-text mb-1"><strong>Material:</strong> {{ producto.material }}</p>
+                                <p class="card-text mb-1"><strong>Color:</strong> {{ producto.color }}</p>
+                                <p class="card-text mb-1"><strong>Stock:</strong> {{ producto.stock }}</p>
+                                <p class="card-text mb-1"><strong>Precio:</strong> ${{ producto.price }}</p>
+                            </div>
                         </div>
-                    </li>
+                    </div>
                 {% empty %}
-                    <li class="list-group-item text-center">No tienes productos aún.</li>
+                    <div class="col-12">
+                        <div class="alert alert-warning text-center">No tienes productos aún.</div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         </div>
     </div>
 </div>
