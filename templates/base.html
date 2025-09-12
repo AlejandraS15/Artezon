@@ -44,7 +44,14 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'home' %}">Inicio</a>
                         </li>
-                        {% if request.user.is_authenticated and request.user.sellerprofile %}
+                        {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'mis_productos' %}">Mis productos</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'agregar_producto' %}">Agregar producto</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'edit_profile' %}">Editar perfil</a>
                         </li>

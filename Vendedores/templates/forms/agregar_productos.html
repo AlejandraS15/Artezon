@@ -1,6 +1,35 @@
-<h2>Añadir Producto</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar</button>
-</form>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center" style="background-color: #f5e9da; color: #7d5a4e;">
+                    <h2 class="mb-0">Añadir Producto</h2>
+                </div>
+                <div class="card-body" style="background-color: #fffaf3;">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" style="color: #7d5a4e;">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn w-100 py-2 fw-bold" style="background-color: #f5e9da; color: #7d5a4e; border: none;">
+                            Guardar producto
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

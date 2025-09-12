@@ -1,13 +1,25 @@
-<h2>Mis Productos</h2>
-<ul>
-    {% for producto in productos %}
-        <li>
-            <strong>{{ producto.nombre }}</strong> - ${{ producto.precio }}
-            {% if producto.imagen %}
-                <img src="{{ producto.imagen.url }}" width="100">
-            {% endif %}
-        </li>
-    {% empty %}
-        <li>No tienes productos aún.</li>
-    {% endfor %}
-</ul>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4 text-center">Mis Productos</h2>
+            <ul class="list-group">
+                {% for producto in productos %}
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div>
+                            <strong>{{ producto.nombre }}</strong> - ${{ producto.precio }}
+                            {% if producto.imagen %}
+                                <img src="{{ producto.imagen.url }}" width="80" class="ms-3 rounded" alt="Imagen de producto">
+                            {% endif %}
+                        </div>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-center">No tienes productos aún.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
