@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4 rounded-3">
+                <h2 class="mb-4 text-center">🏪 Mi Tienda</h2>
+                {% if store.logotipo %}
+                    <div class="text-center mb-3">
+                        <img src="{{ store.logotipo.url }}" alt="Logotipo" style="max-width:120px; max-height:120px; border-radius:12px;">
+                    </div>
+                {% endif %}
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item"><strong>Nombre de la tienda:</strong> {{ store.nombre }}</li>
+                    <li class="list-group-item"><strong>Descripción:</strong> {{ store.descripcion|default:'-' }}</li>
+                    <li class="list-group-item"><strong>Colores:</strong> <span style="color:{{ store.color_principal }}; font-weight:bold;">{{ store.color_principal|default:'-' }}</span> / <span style="color:{{ store.color_secundario }}; font-weight:bold;">{{ store.color_secundario|default:'-' }}</span></li>
+                    <li class="list-group-item"><strong>Tema visual:</strong> {{ store.tema_visual|default:'-' }}</li>
+                    <li class="list-group-item"><strong>Métodos de pago:</strong> {{ store.metodos_pago|default:'-' }}</li>
+                    <li class="list-group-item"><strong>Política de envíos:</strong> {{ store.politica_envios|default:'-' }}</li>
+                    <li class="list-group-item"><strong>Stock inicial:</strong> {{ store.stock_inicial }}</li>
+                    <li class="list-group-item"><strong>Categorías:</strong> {{ store.categorias|default:'-' }}</li>
+                </ul>
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary">🏠 Ir a inicio</a>
+                    <a href="{% url 'edit_seller_and_store' %}" class="btn btn-success">✏️ Editar tienda</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

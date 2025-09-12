@@ -1,0 +1,92 @@
+[
+  {
+    "model": "productos.product",
+    "pk": 1,
+    "fields": {
+      "name": "Taza de cerámica artesanal",
+      "description": "Taza hecha a mano en cerámica esmaltada.",
+      "category": "Hogar",
+      "material": "Cerámica",
+      "color": "Blanco",
+      "price": 35000.00,
+      "stock": 12,
+      "is_active": true,
+      "created_at": "2025-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "productos.product",
+    "pk": 2,
+    "fields": {
+      "name": "Bolso tejido en fique",
+      "description": "Bolso resistente hecho en fique natural.",
+      "category": "Accesorios",
+      "material": "Tejido",
+      "color": "Rojo",
+      "price": 90000.00,
+      "stock": 7,
+      "is_active": true,
+      "created_at": "2025-01-02T11:00:00Z"
+    }
+  },
+  {
+    "model": "productos.product",
+    "pk": 3,
+    "fields": {
+      "name": "Cuenco de madera tallado",
+      "description": "Cuenco tallado a mano en madera reciclada.",
+      "category": "Hogar",
+      "material": "Madera",
+      "color": "Marrón",
+      "price": 60000.00,
+      "stock": 0,
+      "is_active": true,
+      "created_at": "2025-01-03T12:00:00Z"
+    }
+  },
+  {
+    "model": "productos.product",
+    "pk": 4,
+    "fields": {
+      "name": "Collar de semillas naturales",
+      "description": "Accesorio elaborado con semillas y fibras naturales.",
+      "category": "Accesorios",
+      "material": "Semillas",
+      "color": "Verde",
+      "price": 45000.00,
+      "stock": 20,
+      "is_active": true,
+      "created_at": "2025-01-04T13:00:00Z"
+    }
+  },
+  {
+    "model": "productos.product",
+    "pk": 5,
+    "fields": {
+      "name": "Sombrero vueltiao",
+      "description": "Sombrero tradicional tejido en caña flecha.",
+      "category": "Ropa",
+      "material": "Caña flecha",
+      "color": "Negro y blanco",
+      "price": 120000.00,
+      "stock": 5,
+      "is_active": true,
+      "created_at": "2025-01-05T14:00:00Z"
+    }
+  },
+  {
+    "model": "productos.product",
+    "pk": 6,
+    "fields": {
+      "name": "Tapete artesanal de lana",
+      "description": "Tapete tejido a mano en lana de oveja.",
+      "category": "Decoración",
+      "material": "Lana",
+      "color": "Azul",
+      "price": 200000.00,
+      "stock": 3,
+      "is_active": true,
+      "created_at": "2025-01-06T15:00:00Z"
+    }
+  }
+]
