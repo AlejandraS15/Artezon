@@ -1,53 +1,118 @@
-/* 🔐 Formularios de login y registro */
-.auth-container {
-    max-width: 400px;
-    margin: 3rem auto;
-    padding: 2rem;
-    background-color: white;
-    border: 1px solid var(--color-marron-claro);
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+/* ==========================================
+ Paleta de colores basada en imagen
+========================================== */
+:root {
+    --vanilla: #F1EADA;
+    --tobacco: #B59E7D;
+    --mountain: #AAA396;
+    --sand: #CEC1A8;
+    --mahogany: #584738;
 }
 
-.auth-container h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-    color: var(--color-marron); 
+/* ========== Layout Moderno y Responsive ========== */
+.main-container {
+    max-width: 1320px; /* ✅ dentro de rango 1140–1440px */
+    min-width: 320px;
+    margin: 0 auto;
+    padding: 24px;
+    min-height: 600px; /* ✅ secciones con altura mínima */
+    box-sizing: border-box;
+    background: var(--vanilla);
 }
 
-.auth-container .form-group {
-    margin-bottom: 1rem;
-}
-
-.auth-container label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-weight: bold;
-    color: var(--color-marron);
-}
-
-.auth-container input {
+header.header-bg, .navbar.navbar-light {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    padding: 0.6rem;
-    border: 1px solid var(--color-marron-claro);
-    border-radius: 6px;
-    font-size: 1rem;
+    height: 80px; /* ✅ altura estandarizada */
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-sizing: border-box;
+    background: var(--tobacco);
+    box-shadow: 0 2px 12px rgba(88, 71, 56, 0.12); /* tono mahogany translúcido */
 }
 
-.error-messages {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 0.8rem;
-    border-radius: 6px;
-    margin-bottom: 1rem;
+.navbar .navbar-brand img, .header-bg img {
+    height: 48px !important;
+    width: auto;
+    margin-right: 16px;
 }
 
-.auth-container .link {
-    color: var(--color-verde);
-    font-weight: 600;
-    text-decoration: none;
+.navbar .nav-link, .header-bg .nav-link {
+    font-size: 16px; /* ✅ legible */
+    padding: 0 16px;
+    line-height: 80px;
+    color: var(--mahogany);
 }
 
-.auth-container .link:hover {
-    color: var(--color-marron);
+footer.text-center, .minimal-container {
+    min-height: 120px; /* ✅ altura estandarizada */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 0;
+    box-sizing: border-box;
+    background: var(--mahogany) !important;
+    color: var(--vanilla);
+}
+
+.footer-links {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 8px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 16px;
+}
+
+/* Sidebar opcional */
+.sidebar {
+    width: 280px; /* ✅ ancho sidebar */
+    min-width: 200px;
+    max-width: 320px;
+    background: var(--sand);
+    border-right: 1px solid var(--mountain);
+    padding: 24px 0;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+Responsive design
+========================================== */
+@media (max-width: 991px) {
+    .main-container {
+        max-width: 100vw; /* ✅ 100% en mobile */
+        padding: 16px;    /* ✅ padding mobile */
+    }
+    header.header-bg, .navbar.navbar-light {
+        height: 60px; /* ✅ altura reducida en mobile */
+        padding: 0 12px;
+    }
+    .navbar .navbar-brand img, .header-bg img {
+        height: 36px !important;
+    }
+    .navbar .nav-link, .header-bg .nav-link {
+        font-size: 15px;
+        line-height: 60px;
+        padding: 0 8px;
+    }
+    footer.text-center, .minimal-container {
+        min-height: 80px; /* ✅ footer reducido en mobile */
+        padding: 16px 0;
+    }
+    .sidebar {
+        width: 100vw; /* ✅ sidebar full en mobile */
+        max-width: 100vw;
+        min-width: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--mountain);
+        padding: 12px 0;
+    }
 }

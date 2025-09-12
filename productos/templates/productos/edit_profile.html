@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <h2 class="mb-4 text-center">✏️ Editar Perfil</h2>
+
+            <!-- Mostrar mensajes (éxito o error) -->
+            {% if messages %}
+                <div>
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} text-center">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data" class="card shadow-sm p-4 rounded-3">
+                {% csrf_token %}
+
+                <!-- Datos de usuario -->
+                <h5 class="mb-3">👤 Información Personal</h5>
+                {{ user_form.as_p }}
+
+                <!-- Datos de perfil -->
+                <h5 class="mt-4 mb-3">📞 Información de Contacto</h5>
+                <!-- Campos de contacto y preferencias -->
+                {{ profile_form.telefono.label_tag }}
+                {{ profile_form.telefono }}
+                {{ profile_form.direccion.label_tag }}
+                {{ profile_form.direccion }}
+                {{ profile_form.fecha_nacimiento.label_tag }}
+                {{ profile_form.fecha_nacimiento }}
+                {{ profile_form.ciudad.label_tag }}
+                {{ profile_form.ciudad }}
+                {{ profile_form.tipo_lana.label_tag }}
+                {{ profile_form.tipo_lana }}
+                <div class="mb-3">
+                    <label class="form-label">Colores favoritos</label>
+                    {{ profile_form.colores_favoritos }}
+                </div>
+                <div class="mb-3">
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'profile' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">💾 Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
