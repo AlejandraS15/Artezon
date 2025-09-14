@@ -9,12 +9,23 @@
                     <h2 class="mb-0">Editar Producto</h2>
                 </div>
                 <div class="card-body" style="background-color: #fffaf3;">
-                    <form method="post" enctype="multipart/form-data">
+                    <form method="post" enctype="multipart/form-data" id="editar-producto-form">
                         {% csrf_token %}
                         {% for field in form %}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" style="color: #7d5a4e;">{{ field.label }}</label>
-                                {{ field }}
+                                {% if field.name == "imagen" %}
+                                    {% if producto.imagen %}
+                                        <img id="preview-imagen" src="{{ producto.imagen.url }}" alt="Previsualización" style="max-width:100%; max-height:200px; margin-top:10px;" />
+                                        <!-- Solo muestra el input si el usuario quiere cambiar la imagen -->
+                                        <input type="file" name="imagen" id="id_imagen" class="form-control mt-2" />
+                                    {% else %}
+                                        {{ field }}
+                                        <img id="preview-imagen" src="#" alt="Previsualización" style="display:none; max-width:100%; max-height:200px; margin-top:10px;" />
+                                    {% endif %}
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
                                 {% if field.help_text %}
                                     <small class="form-text text-muted">{{ field.help_text }}</small>
                                 {% endif %}
@@ -23,6 +34,12 @@
                                 {% endfor %}
                             </div>
                         {% endfor %}
+                        <div class="mb-3">
+                            <button type="button" class="btn w-100 py-2 fw-bold" style="background-color: #e2c8b0; color: #7d5a4e; border: none;" onclick="calcularPrecioSugerido()">
+                                Mostrar precio sugerido
+                            </button>
+                            <input type="text" id="precio-sugerido" class="form-control mt-2" placeholder="Precio sugerido" readonly style="display:none;">
+                        </div>
                         <button type="submit" class="btn w-100 py-2 fw-bold" style="background-color: #f5e9da; color: #7d5a4e; border: none;">
                             Guardar cambios
                         </button>
@@ -33,4 +50,54 @@
         </div>
     </div>
 </div>
+<script>
+function calcularPrecioSugerido() {
+    const material = document.getElementById("id_material")?.value;
+    const horas = parseInt(document.getElementById("id_horas")?.value) || 0;
+    const experiencia = document.getElementById("id_experiencia")?.value;
+    const cantidad_material = parseFloat(document.getElementById("id_cantidad_material")?.value) || 0;
+
+    // Valores por KG
+    const material_factor = {
+        'algodon': 12000,   // ejemplo: $10.000 por KG
+        'lana': 24000,      // ejemplo: $22.000 por KG
+        'cuero': 60000,     // ejemplo: $60.000 por KG
+    };
+    const experiencia_factor = {
+        'principiante': 1.0,
+        'intermedio': 1.5,
+        'experto': 2.0,
+    };
+
+    const base = 1000;
+    const costo_material = (material_factor[material] || 0) * cantidad_material;
+    const precio = base + (horas * 8000) + costo_material * (experiencia_factor[experiencia] || 1);
+
+    const input = document.getElementById("precio-sugerido");
+    input.value = "Sugerido: $" + precio.toFixed(2);
+    input.style.display = "block";
+}
+
+// Previsualización de imagen
+document.addEventListener("DOMContentLoaded", function() {
+    const inputImagen = document.getElementById("id_imagen");
+    const preview = document.getElementById("preview-imagen");
+    if (inputImagen) {
+        inputImagen.addEventListener("change", function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = "#";
+                preview.style.display = "none";
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

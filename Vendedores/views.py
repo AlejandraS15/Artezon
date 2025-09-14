@@ -3,13 +3,33 @@ from django.contrib.auth.decorators import login_required
 from .forms import ProductoForm
 from productos.models import Product
 
+def calcular_precio_sugerido(material, horas, experiencia):
+    base = 1000
+    material_factor = {
+        'algodon': 1.0,
+        'lana': 1.2,
+        'cuero': 1.5,
+    }
+    experiencia_factor = {
+        'principiante': 1.0,
+        'intermedio': 1.2,
+        'experto': 1.5,
+    }
+    precio = base * material_factor.get(material, 1) * experiencia_factor.get(experiencia, 1) + (horas * 500)
+    return round(precio, 2)
+
 @login_required
 def agregar_producto(request):
     if request.method == "POST":
         form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
             producto = form.save(commit=False)
-            producto.seller = request.user  # Asigna el vendedor actual
+            producto.seller = request.user
+            # Calcula el precio sugerido
+            material = form.cleaned_data.get('material')
+            horas = form.cleaned_data.get('horas')
+            experiencia = form.cleaned_data.get('experiencia')
+            producto.price = calcular_precio_sugerido(material, horas, experiencia)
             producto.save()
             return redirect("mis_productos")
     else:
@@ -36,7 +56,11 @@ def editar_producto(request, producto_id):
         form = ProductoForm(request.POST, request.FILES, instance=producto)
         if form.is_valid():
             producto = form.save(commit=False)
-            producto.seller = request.user  # Mantiene el vendedor actual
+            producto.seller = request.user
+            material = form.cleaned_data.get('material')
+            horas = form.cleaned_data.get('horas')
+            experiencia = form.cleaned_data.get('experiencia')
+            producto.price = calcular_precio_sugerido(material, horas, experiencia)
             producto.save()
             return redirect("mis_productos")
     else:
