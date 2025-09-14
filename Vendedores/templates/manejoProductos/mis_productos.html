@@ -26,6 +26,16 @@
                                 <p class="card-text mb-1"><strong>Color:</strong> {{ producto.color }}</p>
                                 <p class="card-text mb-1"><strong>Stock:</strong> {{ producto.stock }}</p>
                                 <p class="card-text mb-1"><strong>Precio:</strong> ${{ producto.price }}</p>
+                                <a href="{% url 'editar_producto' producto.id %}" 
+                                   class="btn w-100 mb-2 fw-bold"
+                                   style="background-color: #f5e9da; color: #7d5a4e; border: none;">
+                                    Editar
+                                </a>
+                                <a href="{% url 'eliminar_producto' producto.id %}" 
+                                   class="btn w-100 fw-bold"
+                                   style="background-color: #e2c8b0; color: #7d5a4e; border: none;">
+                                    Eliminar
+                                </a>
                             </div>
                         </div>
                     </div>
