@@ -1,3 +1,27 @@
+
+from .product_form import ProductForm
+from django.contrib.auth.decorators import login_required
+
+# Vista para crear producto (requiere perfil de vendedor)
+@login_required
+def create_product(request):
+    try:
+        seller_profile = SellerProfile.objects.get(user=request.user)
+    except SellerProfile.DoesNotExist:
+        messages.error(request, 'Debes completar tu perfil de vendedor antes de publicar productos')
+        return redirect('create_seller_and_store')
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.seller = request.user
+            product.save()
+            messages.success(request, 'Producto creado correctamente.')
+            return redirect('store_profile')
+    else:
+        form = ProductForm()
+    return render(request, 'productos/create_product.html', {'form': form})
 # ────────── IMPORTS ──────────
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
@@ -23,7 +47,7 @@ def home(request):
     price_min = request.GET.get("price_min", "")
     price_max = request.GET.get("price_max", "")
 
-    productos = Product.objects.all()
+    productos = Product.objects.select_related('seller__sellerprofile').all()
 
     if query:
         productos = productos.filter(
@@ -86,19 +110,8 @@ def email_login_view(request):
         form = EmailLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data["user"]
-            tipo_usuario = form.cleaned_data["tipo_usuario"]
             login(request, user)
-            request.session["tipo_usuario"] = tipo_usuario
-            if tipo_usuario == "comprador_vendedor":
-                # Si es vendedor y comprador, verificar si ya tiene perfil de vendedor
-                from .models import SellerProfile
-                if SellerProfile.objects.filter(user=user).exists():
-                    return redirect("store_profile")
-                else:
-                    return redirect("create_seller_and_store")
-            else:
-                # Solo comprador
-                return redirect("home")
+            return redirect("home")
     else:
         form = EmailLoginForm()
     return render(request, "productos/login.html", {"form": form})
@@ -117,24 +130,41 @@ def profile_view(request):
 
 @login_required
 def edit_profile(request):
-    """Editar la información personal y de perfil del usuario."""
-    if request.method == "POST":
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+    """Editar la información personal, perfil y vendedor del usuario."""
+    user = request.user
+    profile = user.profile
+    try:
+        seller_profile = user.sellerprofile
+    except SellerProfile.DoesNotExist:
+        seller_profile = None
 
-        if user_form.is_valid() and profile_form.is_valid():
+    if request.method == "POST":
+        user_form = UserUpdateForm(request.POST, instance=user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        seller_form = SellerProfileForm(request.POST, request.FILES, instance=seller_profile)
+
+        forms_valid = user_form.is_valid() and profile_form.is_valid() and seller_form.is_valid()
+        if forms_valid:
             user_form.save()
             profile_form.save()
+            seller = seller_form.save(commit=False)
+            seller.user = user
+            seller.save()
             messages.success(request, "✅ Perfil actualizado con éxito")
             return redirect("profile")
     else:
-        user_form = UserUpdateForm(instance=request.user)
-        profile_form = ProfileUpdateForm(instance=request.user.profile)
+        user_form = UserUpdateForm(instance=user)
+        profile_form = ProfileUpdateForm(instance=profile)
+        seller_form = SellerProfileForm(instance=seller_profile)
 
     return render(
         request,
         "productos/edit_profile.html",
-        {"user_form": user_form, "profile_form": profile_form},
+        {
+            "user_form": user_form,
+            "profile_form": profile_form,
+            "seller_form": seller_form,
+        },
     )
 
 def product_detail(request, pk):

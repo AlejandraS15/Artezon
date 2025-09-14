@@ -89,7 +89,13 @@
           <div class="card-body text-center">
             <h5 class="card-title">{{ producto.name }}</h5>
             <p class="card-text text-success fw-bold">${{ producto.price }}</p>
-            <a href="{% url 'product_detail' producto.pk %}" class="btn btn-success btn-lg w-100">Ver</a>
+            <hr>
+            <div class="text-start small">
+              <strong>Vendedor:</strong> {{ producto.seller.sellerprofile.nombre }}<br>
+              <strong>Contacto:</strong> {{ producto.seller.sellerprofile.contacto }}<br>
+              <strong>Tienda:</strong> {% if producto.seller.sellerprofile.store_set.first %}{{ producto.seller.sellerprofile.store_set.first.nombre }}{% else %}Sin tienda{% endif %}
+            </div>
+            <a href="{% url 'product_detail' producto.pk %}" class="btn btn-success btn-lg w-100 mt-2">Ver</a>
           </div>
         </div>
       </div>

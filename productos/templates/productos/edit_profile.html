@@ -28,7 +28,6 @@
 
                 <!-- Datos de perfil -->
                 <h5 class="mt-4 mb-3">📞 Información de Contacto</h5>
-                <!-- Campos de contacto y preferencias -->
                 {{ profile_form.telefono.label_tag }}
                 {{ profile_form.telefono }}
                 {{ profile_form.direccion.label_tag }}
@@ -43,7 +42,10 @@
                     <label class="form-label">Colores favoritos</label>
                     {{ profile_form.colores_favoritos }}
                 </div>
-                <div class="mb-3">
+
+                <!-- Datos de vendedor -->
+                <h5 class="mt-4 mb-3">🏪 Perfil de Vendedor (opcional)</h5>
+                {{ seller_form.as_p }}
 
                 <!-- Botones -->
                 <div class="d-flex justify-content-between mt-4">

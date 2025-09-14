@@ -14,6 +14,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path("producto/crear/", views.create_product, name="create_product"),
     path("", landing_page, name="landing"),
     path("home/", home, name="home"),
     path("register/", register_view, name="register"),

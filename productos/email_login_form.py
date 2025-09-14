@@ -3,13 +3,9 @@ from django.contrib.auth import authenticate
 
 
 class EmailLoginForm(forms.Form):
-    TIPO_USUARIO_CHOICES = [
-        ("comprador_vendedor", "Vendedor y comprador"),
-        ("solo_comprador", "Solo comprador"),
-    ]
     email = forms.EmailField(label="Correo electrónico", widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "correo@dominio.com"}))
     password = forms.CharField(label="Contraseña", widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Contraseña"}))
-    tipo_usuario = forms.ChoiceField(label="Tipo de usuario", choices=TIPO_USUARIO_CHOICES, widget=forms.Select(attrs={"class": "form-select"}))
+
 
     def clean(self):
         cleaned_data = super().clean()
