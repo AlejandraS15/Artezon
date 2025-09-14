@@ -25,15 +25,13 @@ header.header-bg, .navbar.navbar-light {
     top: 0;
     left: 0;
     width: 100%;
-    height: 80px; /* ✅ altura estandarizada */
+    height: 80px;
     z-index: 1000;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 0 40px;
-    box-sizing: border-box;
     background: var(--tobacco);
-    box-shadow: 0 2px 12px rgba(88, 71, 56, 0.12); /* tono mahogany translúcido */
+    box-shadow: 0 2px 12px rgba(88, 71, 56, 0.12);
 }
 
 .navbar .navbar-brand img, .header-bg img {
@@ -47,6 +45,15 @@ header.header-bg, .navbar.navbar-light {
     padding: 0 16px;
     line-height: 80px;
     color: var(--mahogany);
+}
+.navbar .nav-link {
+    color: #fff !important;
+    font-family: 'TuTipografiaDelTemplate', sans-serif;
+    font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+    color: #f8d210 !important; /* ejemplo: dorado */
 }
 
 footer.text-center, .minimal-container {
@@ -115,4 +122,10 @@ Responsive design
         border-bottom: 1px solid var(--mountain);
         padding: 12px 0;
     }
+}
+#cart-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
 }

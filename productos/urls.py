@@ -1,6 +1,5 @@
-
-
 from django.urls import path
+from . import views
 from .views import (
     home,
     landing_page,
@@ -25,4 +24,9 @@ urlpatterns = [
     path("vendedor/crear/", create_seller_and_store, name="create_seller_and_store"),
     path("vendedor/editar/", edit_seller_and_store, name="edit_seller_and_store"),
     path("mi-tienda/", store_profile_view, name="store_profile"),
+    path("producto/<int:pk>/", views.product_detail, name="product_detail"),
+    path("carrito/", views.ver_carrito, name="ver_carrito"),
+    path("carrito/agregar/<int:pk>/", views.agregar_al_carrito, name="agregar_al_carrito"),
+    path("carrito/quitar/<int:pk>/", views.quitar_del_carrito, name="quitar_del_carrito"),
+    path("carrito/limpiar/", views.limpiar_carrito, name="limpiar_carrito"),
 ]
