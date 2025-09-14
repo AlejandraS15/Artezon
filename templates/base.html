@@ -20,47 +20,124 @@
 
     <!-- Estilos propios -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body style="background: var(--vanilla); color: var(--mahogany);">
 
     <!-- Header / Navbar -->
-    <header class="header-bg">
-        <nav class="navbar navbar-expand-lg navbar-light">
-            <div class="container-fluid d-flex justify-content-between align-items-center">
+<header class="header-bg">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
 
-                <!-- Logo -->
-                <a href="/" class="navbar-brand d-flex align-items-center">
-                    <img src="{% static 'images/logo.png' %}" alt="Logo">
-                </a>
+            <!-- Logo a la izquierda -->
+            <a href="/" class="navbar-brand d-flex align-items-center">
+                <img src="{% static 'images/logo.png' %}" alt="Logo">
+            </a>
 
-                <!-- Botón colapsable -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <!-- Botón colapsable -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <!-- Links -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Inicio</a>
-                        </li>
-                        {% if request.user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'mis_productos' %}">Mis productos</a>
-                        </li>
+            <!-- Links y carrito a la derecha -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'agregar_producto' %}">Agregar producto</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'edit_profile' %}">Editar perfil</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'home' %}">Inicio</a>
+                    </li>
+
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'mis_productos' %}">Mis productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'agregar_producto' %}">Agregar producto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'edit_profile' %}">Editar perfil</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- Carrito -->
+                    <li class="nav-item ms-3">
+                        <a href="#" id="cart-icon" class="nav-link text-white">
+                            <i class="fas fa-shopping-cart fa-lg"></i>
+                        </a>
+                    </li>
+
+                </ul>
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>
+
+<!-- Carrito desplegable -->
+<div class="cart-dropdown shadow-lg" id="cart-dropdown" style="display:none; position:fixed; top:0; right:0; width:320px; height:100%; background:#fff; z-index:1050; overflow-y:auto;">
+    <div class="cart-dropdown-header d-flex justify-content-between align-items-center p-3 border-bottom">
+        <h5 class="mb-0">Mi Carrito</h5>
+        <button id="cart-close" class="btn border-0 bg-transparent">
+            <i class="fas fa-times" style="color: red; font-size: 1.3rem;"></i>
+        </button>
+    </div>
+    <div class="cart-dropdown-body p-3" id="cart-body">
+        {% if request.session.carrito %}
+            {% for id, item in request.session.carrito.items %}
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <div>
+                        <strong>{{ item.nombre }}</strong><br>
+                        <small>${{ item.precio }} x {{ item.cantidad }}</small>
+                    </div>
+                    <div>
+                        <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm btn-success">+</a>
+                        <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm btn-danger">-</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center text-muted">
+                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                <p class="mb-0">Tu carrito está vacío.</p>
+            </div>
+        {% endif %}
+    </div>
+    <div class="cart-dropdown-footer p-3 border-top">
+        {% if request.session.carrito %}
+            <div class="d-flex justify-content-between mb-3">
+                <strong>Total:</strong>
+                <span>${{ total }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'limpiar_carrito' %}" class="btn btn-warning btn-sm">
+                    <i class="fas fa-trash"></i> Vaciar
+                </a>
+                <a href="#" class="btn btn-primary btn-sm">
+                    <i class="fas fa-credit-card"></i> Comprar
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Script para abrir/cerrar carrito -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const cartIcon = document.getElementById("cart-icon");
+    const cartDropdown = document.getElementById("cart-dropdown");
+    const cartClose = document.getElementById("cart-close");
+
+    cartIcon.addEventListener("click", () => {
+        cartDropdown.style.display = "block";
+    });
+
+    cartClose.addEventListener("click", () => {
+        cartDropdown.style.display = "none";
+    });
+});
+</script>
+
 
     <!-- Contenido dinámico -->
     <main class="main-container" style="background: var(--vanilla);">

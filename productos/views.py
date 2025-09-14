@@ -137,6 +137,107 @@ def edit_profile(request):
         {"user_form": user_form, "profile_form": profile_form},
     )
 
+def product_detail(request, pk):
+    producto = get_object_or_404(Product, pk=pk)
+
+    # buscar perfil del vendedor
+    seller_profile = SellerProfile.objects.filter(user=producto.seller).first()
+    store = Store.objects.filter(seller=seller_profile).first() if seller_profile else None
+
+    context = {
+        "producto": producto,
+        "seller_profile": seller_profile,
+        "store": store,
+    }
+    return render(request, "productos/product_detail.html", context)
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Product
+
+# -------------------------------
+# Ver carrito
+# -------------------------------
+def ver_carrito(request):
+    carrito = request.session.get("carrito", {})
+
+    # Si el carrito no es diccionario, lo reseteamos
+    if not isinstance(carrito, dict):
+        carrito = {}
+        request.session["carrito"] = carrito
+        request.session.modified = True
+
+    total = sum(item["precio"] * item["cantidad"] for item in carrito.values())
+
+    return render(request, "carrito/ver_carrito.html", {
+        "carrito": carrito,
+        "total": total,
+    })
+
+
+# -------------------------------
+# Agregar producto al carrito
+# -------------------------------
+def agregar_al_carrito(request, pk):
+    carrito = request.session.get("carrito", {})
+
+    if not isinstance(carrito, dict):
+        carrito = {}
+
+    producto = get_object_or_404(Product, pk=pk)
+    producto_id = str(producto.pk)  # clave como string
+
+    if producto_id in carrito:
+        carrito[producto_id]["cantidad"] += 1
+    else:
+        carrito[producto_id] = {
+            "nombre": producto.name,
+            "precio": float(producto.price),
+            "cantidad": 1,
+        }
+
+    request.session["carrito"] = carrito
+    request.session.modified = True
+
+    messages.success(request, f"Se agregó {producto.name} al carrito.")
+    return redirect("ver_carrito")
+
+
+# -------------------------------
+# Quitar producto del carrito
+# -------------------------------
+def quitar_del_carrito(request, pk):
+    carrito = request.session.get("carrito", {})
+
+    if not isinstance(carrito, dict):
+        carrito = {}
+
+    producto_id = str(pk)
+
+    if producto_id in carrito:
+        if carrito[producto_id]["cantidad"] > 1:
+            carrito[producto_id]["cantidad"] -= 1
+        else:
+            del carrito[producto_id]
+
+        request.session["carrito"] = carrito
+        request.session.modified = True
+        messages.warning(request, "Producto eliminado del carrito.")
+
+    return redirect("ver_carrito")
+
+
+# -------------------------------
+# Limpiar todo el carrito
+# -------------------------------
+def limpiar_carrito(request):
+    request.session["carrito"] = {}
+    request.session.modified = True
+    messages.warning(request, "El carrito fue vaciado.")
+    return redirect("ver_carrito")
+
+
+
 
 # ────────── VISTAS VENDEDOR / TIENDA ──────────
 @login_required
