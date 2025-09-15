@@ -134,3 +134,5 @@ MEDIA_ROOT = BASE_DIR / 'productos' / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+WHATSAPP_NUMBER = "573205306403"

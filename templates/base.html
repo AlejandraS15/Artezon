@@ -113,8 +113,9 @@
                 <a href="{% url 'limpiar_carrito' %}" class="btn btn-warning btn-sm">
                     <i class="fas fa-trash"></i> Vaciar
                 </a>
-                <a href="#" class="btn btn-primary btn-sm">
-                    <i class="fas fa-credit-card"></i> Comprar
+                <a href="{% url 'comprar_carrito' %}" target="_blank"
+                    class="btn btn-primary btn-sm">
+                        <i class="fas fa-credit-card"></i> Comprar
                 </a>
             </div>
         {% endif %}

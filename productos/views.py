@@ -1,6 +1,13 @@
 
 from .product_form import ProductForm
 from django.contrib.auth.decorators import login_required
+from urllib.parse import quote
+
+from django.conf import settings
+from django.shortcuts import redirect
+from django.contrib import messages
+
+from .models import Product
 
 # Vista para crear producto (requiere perfil de vendedor)
 @login_required
@@ -344,3 +351,40 @@ def edit_seller_and_store(request):
         'store_form': store_form,
         'modo': 'editar',
     })
+
+def _formatear_items_carrito_para_mensaje(carrito):
+    partes = []
+    for _id, item in carrito.items():
+        cantidad = item.get("cantidad", 0)
+        nombre = item.get("nombre", "").strip()
+        if nombre:
+            partes.append(f"{cantidad} {nombre}")
+    if not partes:
+        return ""
+    if len(partes) == 1:
+        return partes[0]
+    return ", ".join(partes[:-1]) + " y " + partes[-1]
+
+
+def comprar_carrito(request):
+    carrito = request.session.get("carrito", {})
+    if not isinstance(carrito, dict) or not carrito:
+        messages.warning(request, "El carrito está vacío.")
+        return redirect("home")
+
+    total = sum(item.get("precio", 0) * item.get("cantidad", 0)
+                for item in carrito.values())
+    items_texto = _formatear_items_carrito_para_mensaje(carrito)
+
+    mensaje = (
+        f"Hola, deseo comprar {items_texto}. "
+        f"Total: ${total:.2f}. ¿Podrían confirmarme disponibilidad y envío? Gracias."
+    )
+
+    numero = getattr(settings, "WHATSAPP_NUMBER", "")
+    if not numero:
+        messages.error(request, "Número de WhatsApp no configurado.")
+        return redirect("ver_carrito")
+
+    url = f"https://wa.me/{numero}?text={quote(mensaje)}"
+    return redirect(url)
