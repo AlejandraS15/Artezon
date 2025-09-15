@@ -17,15 +17,20 @@ Los clientes pueden navegar por las tiendas y productos, y al comprar son rediri
 ## Instalación y ejecución
 
 1. **Clonar el repositorio**
-git clone https://github.com/tuusuario/turepositorio.git
+git clone https://github.com/AlejandraS15/Artezon.git
 cd turepositorio
 
-2. ** Crear y activar entorno virtua** 
+2. **Crear y activar entorno virtua** 
 python -m venv venv
-# En Windows
+- En Windows
 venv\Scripts\activate
-# En Linux/Mac
+- En Linux/Mac
 source venv/bin/activate
 
+3. **Aplicar migraciones**
+python manage.py migrate
+
+4. **Levantar el servidor**
+python manage.py runserver
 
 
