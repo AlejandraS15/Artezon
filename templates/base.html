@@ -83,28 +83,28 @@
         </button>
     </div>
     <div class="cart-dropdown-body p-3" id="cart-body">
-        {% if request.session.carrito %}
-            {% for id, item in request.session.carrito.items %}
-                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                    <div>
-                        <strong>{{ item.nombre }}</strong><br>
-                        <small>${{ item.precio }} x {{ item.cantidad }}</small>
-                    </div>
-                    <div>
-                        <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm btn-success">+</a>
-                        <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm btn-danger">-</a>
-                    </div>
+    {% if carrito %}
+        {% for id, item in carrito.items %}
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <div>
+                    <strong>{{ item.nombre }}</strong><br>
+                    <small>${{ item.precio }} x {{ item.cantidad }}</small>
                 </div>
-            {% endfor %}
-        {% else %}
-            <div class="text-center text-muted">
-                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
-                <p class="mb-0">Tu carrito está vacío.</p>
+                <div>
+                    <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm btn-success">+</a>
+                    <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm btn-danger">-</a>
+                </div>
             </div>
-        {% endif %}
-    </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center text-muted">
+            <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+            <p class="mb-0">Tu carrito está vacío.</p>
+        </div>
+    {% endif %}
+</div>
     <div class="cart-dropdown-footer p-3 border-top">
-        {% if request.session.carrito %}
+        {% if carrito %}
             <div class="d-flex justify-content-between mb-3">
                 <strong>Total:</strong>
                 <span>${{ total }}</span>
