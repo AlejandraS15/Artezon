@@ -11,6 +11,9 @@ from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm
 from .seller_forms import SellerProfileForm, StoreForm
 from .email_login_form import EmailLoginForm
 
+from django.utils.translation import gettext as _
+from django.shortcuts import render
+
 # ────────── VISTAS HOME ──────────
 def home(request):
     """
@@ -125,7 +128,7 @@ def edit_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, "✅ Perfil actualizado con éxito")
+            messages.success(request, _("✅ Perfil actualizado con éxito"))
             return redirect("profile")
     else:
         user_form = UserUpdateForm(instance=request.user)
@@ -199,7 +202,7 @@ def agregar_al_carrito(request, pk):
     request.session["carrito"] = carrito
     request.session.modified = True
 
-    messages.success(request, f"Se agregó {producto.name} al carrito.")
+    messages.success(request, _("Se agregó %(producto)s al carrito.") % {"producto": producto.name})
     return redirect("ver_carrito")
 
 
@@ -222,7 +225,7 @@ def quitar_del_carrito(request, pk):
 
         request.session["carrito"] = carrito
         request.session.modified = True
-        messages.warning(request, "Producto eliminado del carrito.")
+        messages.warning(request, _("Producto eliminado del carrito."))
 
     return redirect("ver_carrito")
 
@@ -233,7 +236,7 @@ def quitar_del_carrito(request, pk):
 def limpiar_carrito(request):
     request.session["carrito"] = {}
     request.session.modified = True
-    messages.warning(request, "El carrito fue vaciado.")
+    messages.warning(request, _("El carrito fue vaciado."))
     return redirect("ver_carrito")
 
 
@@ -247,7 +250,7 @@ def store_profile_view(request):
         seller_profile = request.user.sellerprofile
         store = seller_profile.store
     except (SellerProfile.DoesNotExist, Store.DoesNotExist):
-        messages.info(request, 'Primero debes crear tu perfil de vendedor y tienda.')
+        messages.info(request, _("Primero debes crear tu perfil de vendedor y tienda."))
         return redirect('create_seller_and_store')
     return render(request, 'productos/store_profile.html', {'store': store})
 
@@ -271,10 +274,10 @@ def create_seller_and_store(request):
             store = store_form.save(commit=False)
             store.seller = seller
             store.save()
-            messages.success(request, '✅ Perfil de vendedor y tienda creados correctamente.')
+            messages.success(request, _("✅ Perfil de vendedor y tienda creados correctamente."))
             return redirect('home')
         else:
-            messages.error(request, 'Por favor corrige los errores en el formulario.')
+            messages.error(request, _("Por favor corrige los errores en el formulario."))
     else:
         seller_form = SellerProfileForm()
         store_form = StoreForm()
@@ -301,10 +304,10 @@ def edit_seller_and_store(request):
         if seller_form.is_valid() and store_form.is_valid():
             seller_form.save()
             store_form.save()
-            messages.success(request, '✅ Perfil de vendedor y tienda actualizados correctamente.')
+            messages.success(request, _("✅ Perfil de vendedor y tienda actualizados correctamente."))
             return redirect('profile')
         else:
-            messages.error(request, 'Por favor corrige los errores en el formulario.')
+            messages.error(request, _("Por favor corrige los errores en el formulario."))
     else:
         seller_form = SellerProfileForm(instance=seller_profile)
         store_form = StoreForm(instance=store)
