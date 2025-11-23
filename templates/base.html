@@ -78,6 +78,12 @@
                             <i class="fas fa-shopping-cart fa-lg"></i>
                         </a>
                     </li>
+                    
+                    {% if quote %}
+                    <li class="nav-item d-flex align-items-center">
+                        <span style="font-size: 1.1rem; opacity: 0.9; cursor: default; pointer-events: none; color: #584738; margin-left: 20px;"><b>"{{ quote }}"</b></span>
+                    </li>
+                    {% endif %}
 
                 </ul>
             </div>
@@ -154,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 <!-- Contenido dinámico -->
-<main class="main-container" style="background: var(--vanilla);">
+<main class="main-container mt-5" style="background: var(--vanilla);">
     {% block content %}
     {% endblock %}
 </main>
