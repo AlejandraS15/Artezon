@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">{% trans "🛒 Carrito de Compras" %}</h2>
+
+    {% if carrito %}
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>{% trans "Producto" %}</th>
+                        <th>{% trans "Cantidad" %}</th>
+                        <th>{% trans "Precio unitario" %}</th>
+                        <th>{% trans "Subtotal" %}</th>
+                        <th>{% trans "Acciones" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for id, item in carrito.items %}
+                        <tr>
+                            <td>{{ item.nombre }}</td>
+                            <td>{{ item.cantidad }}</td>
+                            <td>${{ item.precio }}</td>
+                            <td>
+                                ${{ item.precio|floatformat:2|add:item.cantidad|floatformat:2 }}
+                            </td>
+                            <td>
+                                <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                                <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-minus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h4>
+                {% trans "Total:" %}
+                <span class="text-success">${{ total }}</span>
+            </h4>
+            <div>
+                <a href="{% url 'limpiar_carrito' %}" class="btn btn-warning">
+                    <i class="fas fa-trash"></i> {% trans "Vaciar carrito" %}
+                </a>
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-credit-card"></i> {% trans "Comprar" %}
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center shadow-sm">
+            <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+            <p class="mb-0">{% trans "Tu carrito está vacío." %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
