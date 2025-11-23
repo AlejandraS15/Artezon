@@ -9,6 +9,48 @@ from django.contrib import messages
 
 from .models import Product
 
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import ProductSerializer
+import requests
+from django.views.generic import FormView
+from django.shortcuts import render
+from .forms import ExternalAPIForm
+
+class ProductListAPIView(APIView):
+    def get(self, request):
+        products = Product.objects.filter(is_active=True)
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data)
+
+class ExternalAPIFormView(FormView):
+    template_name = "external_api/external_api.html"
+    form_class = ExternalAPIForm
+    success_url = "."  # Para recargar la misma página después del POST
+
+    def form_valid(self, form):
+        url = form.cleaned_data["url"]
+        data = None
+        error = None
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+        except Exception as e:
+            error = f"Error al consumir el servicio: {str(e)}"
+
+        # Renderizamos manualmente para poder enviar data y error
+        return render(
+            self.request,
+            self.template_name,
+            {
+                "form": form,
+                "data": data,
+                "error": error,
+            }
+        )
+
 # Vista para crear producto (requiere perfil de vendedor)
 @login_required
 def create_product(request):

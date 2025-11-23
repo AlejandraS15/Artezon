@@ -11,9 +11,13 @@ from .views import (
     create_seller_and_store,
     edit_seller_and_store,
     store_profile_view,
+    ProductListAPIView,
+    ExternalAPIFormView
 )
 
 urlpatterns = [
+    path('api/products/', ProductListAPIView.as_view(), name='api_products'),
+    path('external_api/', ExternalAPIFormView.as_view(), name='external_api'),
     path("producto/crear/", views.create_product, name="create_product"),
     path("", landing_page, name="landing"),
     path("home/", home, name="home"),
