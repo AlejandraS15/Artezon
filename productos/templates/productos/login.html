@@ -1,9 +1,10 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artezon - Crochet y Más</title>
+    <title>{% trans "Artezon - Crochet y Más" %}</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -161,7 +162,7 @@
 
     <!-- Header -->
     <header>
-        <h1>Artezon - Crochet Artesanal</h1>
+        <h1>{% trans "Artezon - Crochet Artesanal" %}</h1>
     </header>
 
     <!-- Contenedor principal -->
@@ -169,27 +170,27 @@
 
         <!-- Producto destacado -->
         <section class="product-card">
-            <h2>Producto Destacado</h2>
-            <p>Hermoso amigurumi hecho a mano con amor y dedicación.</p>
-            <button class="btn btn-primary">Comprar Ahora</button>
+            <h2>{% trans "Producto Destacado" %}</h2>
+            <p>{% trans "Hermoso amigurumi hecho a mano con amor y dedicación." %}</p>
+            <button class="btn btn-primary">{% trans "Comprar Ahora" %}</button>
         </section>
 
         <!-- Formulario de login funcional -->
         <section class="login-container">
-            <h2>Iniciar sesión</h2>
+            <h2>{% trans "Iniciar sesión" %}</h2>
             <form method="post" action="{% url 'login' %}">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
-                <label for="id_email">Correo electrónico</label>
+                <label for="id_email">{% trans "Correo electrónico" %}</label>
                 {{ form.email }}
-                <label for="id_password">Contraseña</label>
+                <label for="id_password">{% trans "Contraseña" %}</label>
                 {{ form.password }}
-                <label for="id_tipo_usuario">Tipo de usuario</label>
+                <label for="id_tipo_usuario">{% trans "Tipo de usuario" %}</label>
                 {{ form.tipo_usuario }}
-                <button class="btn-secundario w-100 mt-2" type="submit">Entrar</button>
+                <button class="btn-secundario w-100 mt-2" type="submit">{% trans "Entrar" %}</button>
             </form>
             <div style="margin-top:1rem; text-align:center;">
-                <a href="{% url 'register' %}">¿No tienes cuenta? Regístrate aquí</a>
+                <a href="{% url 'register' %}">{% trans "¿No tienes cuenta? Regístrate aquí" %}</a>
             </div>
         </section>
 
@@ -197,7 +198,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Artezon - Artesanías hechas con amor</p>
+        <p>&copy; 2025 {% trans "Artezon - Artesanías hechas con amor" %}</p>
     </footer>
 
 </body>

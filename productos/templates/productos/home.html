@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
+
 {% block content %}
 <div class="container my-4">
+
   {% if request.session.tipo_usuario == 'comprador_vendedor' %}
   <div class="d-flex justify-content-end mb-3">
-    <a href="{% url 'store_profile' %}" class="btn btn-outline-primary">🏪 Ir a mi tienda</a>
+    <a href="{% url 'store_profile' %}" class="btn btn-outline-primary">
+      🏪 {% trans "Ir a mi tienda" %}
+    </a>
   </div>
   {% endif %}
 
@@ -16,7 +21,7 @@
           type="text" 
           name="q" 
           class="form-control rounded-pill border-success" 
-          placeholder="Buscar productos..."
+          placeholder="{% trans 'Buscar productos...' %}"
           value="{{ current_filters.q }}"
         >
       </div>
@@ -25,7 +30,7 @@
     <div class="row g-2 align-items-center">
       <div class="col-md-3">
         <select name="material" class="form-select">
-          <option value="">Todos los materiales</option>
+          <option value="">{% trans "Todos los materiales" %}</option>
           {% for m in materiales %}
             <option value="{{ m }}" {% if m == current_filters.material %}selected{% endif %}>
               {{ m }}
@@ -36,7 +41,7 @@
 
       <div class="col-md-3">
         <select name="color" class="form-select">
-          <option value="">Todos los colores</option>
+          <option value="">{% trans "Todos los colores" %}</option>
           {% for c in colores %}
             <option value="{{ c }}" {% if c == current_filters.color %}selected{% endif %}>
               {{ c }}
@@ -50,7 +55,7 @@
           type="number" 
           name="price_min" 
           class="form-control"
-          placeholder="Price mín." 
+          placeholder="{% trans 'Precio mín.' %}"
           value="{{ current_filters.price_min }}"
           min="0"
           step="10000"
@@ -62,7 +67,7 @@
           type="number" 
           name="price_max" 
           class="form-control"
-          placeholder="Price máx." 
+          placeholder="{% trans 'Precio máx.' %}"
           value="{{ current_filters.price_max }}"
           min="0"
           step="10000"
@@ -70,8 +75,12 @@
       </div>
 
       <div class="col-md-2 d-flex gap-2">
-        <button type="submit" class="btn btn-success w-50">Filtrar</button>
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary w-50">Limpiar</a>
+        <button type="submit" class="btn btn-success w-50">
+          {% trans "Filtrar" %}
+        </button>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary w-50">
+          {% trans "Limpiar" %}
+        </a>
       </div>
     </div>
   </form>
@@ -84,33 +93,43 @@
           {% if producto.imagen %}
             <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.name }}">
           {% else %}
-            <img src="{% static 'img/default.png' %}" class="card-img-top" alt="Sin imagen">
+            <img src="{% static 'img/default.png' %}" class="card-img-top" alt="{% trans 'Sin imagen' %}">
           {% endif %}
           <div class="card-body text-center">
             <h5 class="card-title">{{ producto.name }}</h5>
             <p class="card-text text-success fw-bold">${{ producto.price }}</p>
-            <a href="{% url 'product_detail' producto.pk %}" class="btn btn-success btn-lg w-100">Ver</a>
+            <a href="{% url 'product_detail' producto.pk %}" class="btn btn-success btn-lg w-100">
+              {% trans "Ver" %}
+            </a>
           </div>
         </div>
       </div>
     {% empty %}
       <div class="col-12">
-        <p class="text-center text-muted">No se encontraron productos.</p>
+        <p class="text-center text-muted">{% trans "No se encontraron productos." %}</p>
       </div>
     {% endfor %}
   </div>
 
   <!-- 📑 Paginación -->
   {% if is_paginated %}
-    <nav class="pagination justify-content-center mt-4" aria-label="Paginación">
+    <nav class="pagination justify-content-center mt-4" aria-label="{% trans 'Paginación' %}">
       {% if page_obj.has_previous %}
-        <a class="btn btn-outline-success me-2" href="?page={{ page_obj.previous_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Anterior</a>
+        <a class="btn btn-outline-success me-2"
+           href="?page={{ page_obj.previous_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">
+          {% trans "Anterior" %}
+        </a>
       {% endif %}
 
-      <span class="align-self-center mx-2">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+      <span class="align-self-center mx-2">
+        {% blocktrans %}Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}{% endblocktrans %}
+      </span>
 
       {% if page_obj.has_next %}
-        <a class="btn btn-outline-success ms-2" href="?page={{ page_obj.next_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Siguiente</a>
+        <a class="btn btn-outline-success ms-2"
+           href="?page={{ page_obj.next_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">
+          {% trans "Siguiente" %}
+        </a>
       {% endif %}
     </nav>
   {% endif %}

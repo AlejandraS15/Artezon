@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 <div class="container mt-5">
@@ -7,11 +8,18 @@
         <div class="col-md-8">
             <div class="card shadow-sm p-4 rounded-3">
                 <h2 class="mb-4 text-center">
-                    {% if modo == 'crear' %}Crear perfil de vendedor y tienda{% else %}Editar perfil de vendedor y tienda{% endif %}
+                    {% if modo == 'crear' %}
+                        {% trans "Crear perfil de vendedor y tienda" %}
+                    {% else %}
+                        {% trans "Editar perfil de vendedor y tienda" %}
+                    {% endif %}
                 </h2>
+
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <h5 class="mb-3">👤 Información del vendedor</h5>
+
+                    <h5 class="mb-3">{% trans "👤 Información del vendedor" %}</h5>
+
                     {{ seller_form.non_field_errors }}
                     <div class="mb-3">{{ seller_form.nombre.label_tag }}{{ seller_form.nombre }}</div>
                     <div class="mb-3">{{ seller_form.alias.label_tag }}{{ seller_form.alias }}</div>
@@ -22,7 +30,8 @@
                     <div class="mb-3">{{ seller_form.redes_sociales.label_tag }}{{ seller_form.redes_sociales }}</div>
                     <div class="mb-3">{{ seller_form.ubicacion.label_tag }}{{ seller_form.ubicacion }}</div>
 
-                    <h5 class="mt-4 mb-3">🏪 Información de la tienda</h5>
+                    <h5 class="mt-4 mb-3">{% trans "🏪 Información de la tienda" %}</h5>
+
                     {{ store_form.non_field_errors }}
                     <div class="mb-3">{{ store_form.nombre.label_tag }}{{ store_form.nombre }}</div>
                     <div class="mb-3">{{ store_form.logotipo.label_tag }}{{ store_form.logotipo }}</div>
@@ -32,7 +41,8 @@
                     <div class="mb-3">{{ store_form.color_secundario.label_tag }}{{ store_form.color_secundario }}</div>
                     <div class="mb-3">{{ store_form.tema_visual.label_tag }}{{ store_form.tema_visual }}</div>
 
-                    <h5 class="mt-4 mb-3">🛒 Detalles de venta</h5>
+                    <h5 class="mt-4 mb-3">{% trans "🛒 Detalles de venta" %}</h5>
+
                     <div class="mb-3">{{ store_form.categorias.label_tag }}{{ store_form.categorias }}</div>
                     <div class="mb-3">{{ store_form.metodos_pago.label_tag }}{{ store_form.metodos_pago }}</div>
                     <div class="mb-3">{{ store_form.politica_envios.label_tag }}{{ store_form.politica_envios }}</div>
@@ -41,7 +51,11 @@
 
                     <div class="d-flex justify-content-end mt-4">
                         <button type="submit" class="btn btn-success px-4">
-                            {% if modo == 'crear' %}Crear tienda{% else %}Guardar cambios{% endif %}
+                            {% if modo == 'crear' %}
+                                {% trans "Crear tienda" %}
+                            {% else %}
+                                {% trans "Guardar cambios" %}
+                            {% endif %}
                         </button>
                     </div>
                 </form>

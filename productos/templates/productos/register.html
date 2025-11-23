@@ -1,13 +1,14 @@
-{% extends "base.html" %}
-
+{% load i18n %}
 {% block content %}
-<h2>Registro de usuario</h2>
+<h2>{% trans "Registro de usuario" %}</h2>
 
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Registrarme</button>
+    <button type="submit">{% trans "Registrarme" %}</button>
 </form>
 
-<p>¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+<p>{% trans "¿Ya tienes cuenta?" %} 
+   <a href="{% url 'login' %}">{% trans "Inicia sesión aquí" %}</a>
+</p>
 {% endblock %}
