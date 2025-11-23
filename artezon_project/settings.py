@@ -155,4 +155,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 WHATSAPP_NUMBER = "573205306403"
 
-REPORT_IMPL = "pdf"   # o "excel"
+REPORT_IMPL = "pdf"

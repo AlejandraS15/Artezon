@@ -3,6 +3,7 @@ import csv
 import io
 import json
 from typing import Iterable, Mapping, Sequence
+import datetime
 
 
 class ReportGenerator(ABC):
@@ -18,7 +19,7 @@ class ReportGenerator(ABC):
 
 
 class CsvReportGenerator(ReportGenerator):
-    def __init__(self, columns: Sequence[str] = ("name", "price")):
+    def __init__(self, columns: Sequence[str] = ("name", "price", "description", "category", "material", "color", "stock", "created_at", "seller_username")):
         self.columns = list(columns)
 
     def generate(self, rows: Iterable[Mapping]) -> bytes:
@@ -26,8 +27,13 @@ class CsvReportGenerator(ReportGenerator):
         writer = csv.DictWriter(buf, fieldnames=self.columns)
         writer.writeheader()
         for r in rows:
-            # aseguramos que las claves existan
-            row = {k: r.get(k, "") for k in self.columns}
+            # aseguramos que las claves existan y que los datetimes estén serializados
+            row = {}
+            for k in self.columns:
+                v = r.get(k, "")
+                if isinstance(v, datetime.datetime):
+                    v = v.isoformat()
+                row[k] = v
             writer.writerow(row)
         return buf.getvalue().encode("utf-8")
 
@@ -40,8 +46,16 @@ class JsonReportGenerator(ReportGenerator):
         self.indent = indent
 
     def generate(self, rows: Iterable[Mapping]) -> bytes:
-        # For determinism, convert to list first
-        data = [dict(r) for r in rows]
+        # Convert rows to plain serializable types (e.g. datetimes -> ISO strings)
+        data = []
+        for r in rows:
+            obj = {}
+            for k, v in dict(r).items():
+                if isinstance(v, datetime.datetime):
+                    obj[k] = v.isoformat()
+                else:
+                    obj[k] = v
+            data.append(obj)
         return json.dumps(data, ensure_ascii=False, indent=self.indent).encode("utf-8")
 
     def filename(self) -> str:

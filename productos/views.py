@@ -408,7 +408,33 @@ def export_products_report(request):
     """
     from .factories import get_report_generator
     # usamos el modelo `Product` ya importado en este módulo
-    rows = list(Product.objects.values("name", "price"))
+    # Obtener más detalles de producto. Mapear seller__username -> seller_username
+    raw_rows = Product.objects.values(
+        "name",
+        "price",
+        "description",
+        "category",
+        "material",
+        "color",
+        "stock",
+        "created_at",
+        "seller__username",
+    )
+
+    rows = []
+    for r in raw_rows:
+        rows.append({
+            "name": r.get("name"),
+            "price": r.get("price"),
+            "description": r.get("description", ""),
+            "category": r.get("category", ""),
+            "material": r.get("material", ""),
+            "color": r.get("color", ""),
+            "stock": r.get("stock", 0),
+            # convertir created_at a ISO string para evitar problemas de serialización
+            "created_at": (r.get("created_at").isoformat() if r.get("created_at") else ""),
+            "seller_username": r.get("seller__username", ""),
+        })
 
     generator = get_report_generator()
     file_bytes = generator.generate(rows)
