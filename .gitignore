@@ -1,1 +1,24 @@
-"venv/__pycache__/*.pyc db.sqlite3.env" 
+# Entorno virtual
+venv/
+env/
+
+# Compilados de Python
+__pycache__/
+*.pyc
+
+# Archivos de base de datos
+db.sqlite3
+
+# Archivos temporales de Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# Archivos de migraciones compiladas
+*/migrations/__pycache__/
+
+# Archivos de configuración local
+.env
