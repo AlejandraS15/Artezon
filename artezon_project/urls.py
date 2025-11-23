@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from productos.views import export_products_report
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
@@ -24,6 +25,8 @@ from django.conf.urls.i18n import i18n_patterns
 urlpatterns = [
     # URLs necesarias para cambiar idioma
     path('i18n/', include('django.conf.urls.i18n')),
+    # ruta explícita para compatibilidad con enlaces que usan /productos/export/
+    path('productos/export/', export_products_report),
 ]
 
 urlpatterns += i18n_patterns(

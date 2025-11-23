@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from urllib.parse import quote
 
 from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.contrib import messages
 
@@ -16,6 +17,8 @@ import requests
 from django.views.generic import FormView
 from django.shortcuts import render
 from .forms import ExternalAPIForm
+
+
 
 class ProductListAPIView(APIView):
     def get(self, request):
@@ -396,6 +399,23 @@ def edit_seller_and_store(request):
         'store_form': store_form,
         'modo': 'editar',
     })
+
+
+def export_products_report(request):
+    """Exporta un reporte de productos como archivo (CSV o JSON según configuración).
+
+    Usa la fábrica `get_report_generator()` en `productos/factories.py`.
+    """
+    from .factories import get_report_generator
+    # usamos el modelo `Product` ya importado en este módulo
+    rows = list(Product.objects.values("name", "price"))
+
+    generator = get_report_generator()
+    file_bytes = generator.generate(rows)
+
+    response = HttpResponse(file_bytes, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{generator.filename()}"'
+    return response
 
 def _formatear_items_carrito_para_mensaje(carrito):
     partes = []
