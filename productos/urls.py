@@ -11,9 +11,14 @@ from .views import (
     create_seller_and_store,
     edit_seller_and_store,
     store_profile_view,
+    ProductListAPIView,
+    ExternalAPIFormView
 )
 
 urlpatterns = [
+    path('api/products/', ProductListAPIView.as_view(), name='api_products'),
+    path('external_api/', ExternalAPIFormView.as_view(), name='external_api'),
+    path("producto/crear/", views.create_product, name="create_product"),
     path("", landing_page, name="landing"),
     path("home/", home, name="home"),
     path("register/", register_view, name="register"),
@@ -29,4 +34,5 @@ urlpatterns = [
     path("carrito/agregar/<int:pk>/", views.agregar_al_carrito, name="agregar_al_carrito"),
     path("carrito/quitar/<int:pk>/", views.quitar_del_carrito, name="quitar_del_carrito"),
     path("carrito/limpiar/", views.limpiar_carrito, name="limpiar_carrito"),
+    path("carrito/comprar/", views.comprar_carrito, name="comprar_carrito"),
 ]

@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load i18n %}
 
 {% block content %}
 <div class="container mt-5">
@@ -7,17 +6,25 @@
         <div class="col-md-7">
             <div class="card shadow-lg border-0">
                 <div class="card-header text-center" style="background-color: #f5e9da; color: #7d5a4e;">
-                    <h2 class="mb-0">{% trans "Añadir Producto" %}</h2>
+                    <h2 class="mb-0">Editar Producto</h2>
                 </div>
                 <div class="card-body" style="background-color: #fffaf3;">
-                    <form method="post" enctype="multipart/form-data" id="producto-form">
+                    <form method="post" enctype="multipart/form-data" id="editar-producto-form">
                         {% csrf_token %}
                         {% for field in form %}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" style="color: #7d5a4e;">{{ field.label }}</label>
-                                {{ field }}
                                 {% if field.name == "imagen" %}
-                                    <img id="preview-imagen" src="#" alt="Previsualización" style="display:none; max-width:100%; max-height:200px; margin-top:10px;" />
+                                    {% if producto.imagen %}
+                                        <img id="preview-imagen" src="{{ producto.imagen.url }}" alt="Previsualización" style="max-width:100%; max-height:200px; margin-top:10px;" />
+                                        <!-- Solo muestra el input si el usuario quiere cambiar la imagen -->
+                                        <input type="file" name="imagen" id="id_imagen" class="form-control mt-2" />
+                                    {% else %}
+                                        {{ field }}
+                                        <img id="preview-imagen" src="#" alt="Previsualización" style="display:none; max-width:100%; max-height:200px; margin-top:10px;" />
+                                    {% endif %}
+                                {% else %}
+                                    {{ field }}
                                 {% endif %}
                                 {% if field.help_text %}
                                     <small class="form-text text-muted">{{ field.help_text }}</small>
@@ -34,8 +41,9 @@
                             <input type="text" id="precio-sugerido" class="form-control mt-2" placeholder="Precio sugerido" readonly style="display:none;">
                         </div>
                         <button type="submit" class="btn w-100 py-2 fw-bold" style="background-color: #f5e9da; color: #7d5a4e; border: none;">
-                            {% trans "Guardar producto" %}
+                            Guardar cambios
                         </button>
+                        <a href="{% url 'mis_productos' %}" class="btn btn-secondary w-100 mt-2">Cancelar</a>
                     </form>
                 </div>
             </div>

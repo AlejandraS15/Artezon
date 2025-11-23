@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center" style="background-color: #f5e9da; color: #7d5a4e;">
+                    <h4>¿Estás seguro que deseas eliminar este producto?</h4>
+                </div>
+                <div class="card-body" style="background-color: #fffaf3;">
+                    <h5 class="mb-3">{{ producto.name }}</h5>
+                    {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" class="img-fluid rounded mb-3" style="max-height:200px;">
+                    {% endif %}
+                    <p><strong>Descripción:</strong> {{ producto.description }}</p>
+                    <p><strong>Precio:</strong> ${{ producto.price }}</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
+                        <a href="{% url 'mis_productos' %}" class="btn btn-secondary ms-2">Cancelar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
