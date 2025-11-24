@@ -33,7 +33,7 @@ msgstr "Save product"
 
 #: .\Vendedores\templates\forms\confirmar_eliminacion.html:10
 msgid "¿Estás seguro que deseas eliminar este producto?"
-msgstr ""
+msgstr "Are you sure you want to delete this product?"
 
 #: .\Vendedores\templates\forms\confirmar_eliminacion.html:19
 #: .\Vendedores\templates\manejoProductos\mis_productos.html:26
@@ -49,7 +49,7 @@ msgstr "Price:"
 
 #: .\Vendedores\templates\forms\confirmar_eliminacion.html:25
 msgid "Eliminar definitivamente"
-msgstr ""
+msgstr "Permanently delete"
 
 #: .\Vendedores\templates\forms\confirmar_eliminacion.html:29
 #: .\Vendedores\templates\forms\editar_producto.html:65
@@ -61,14 +61,14 @@ msgstr "Cancel"
 #, fuzzy
 #| msgid "Agregar producto"
 msgid "Editar Producto"
-msgstr "Add product"
+msgstr "Edit product"
 
 #: .\Vendedores\templates\forms\editar_producto.html:24
 #: .\Vendedores\templates\forms\editar_producto.html:30
 #, fuzzy
 #| msgid "Paginación"
 msgid "Previsualización"
-msgstr "Pagination"
+msgstr "Preview"
 
 #: .\Vendedores\templates\forms\editar_producto.html:51
 msgid "Mostrar precio sugerido"
@@ -165,7 +165,7 @@ msgstr "Total"
 #, fuzzy
 #| msgid "Mi Carrito"
 msgid "Vaciar carrito"
-msgstr "My Cart"
+msgstr "Empty cart"
 
 #: .\productos\templates\carrito\ver_carrito.html:54 .\templates\base.html:143
 msgid "Comprar"
