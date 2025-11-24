@@ -28,6 +28,9 @@
 </head>
 <body style="background: #FFFFFF; color: var(--verde-oscuro);">
 
+    <!-- Skip to main content link para navegación por teclado -->
+    <a href="#main-content" class="skip-to-content">{% trans "Saltar al contenido principal" %}</a>
+
     <!-- Header / Navbar -->
 <header class="header-bg">
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -65,12 +68,30 @@
 
                     <!-- Idiomas -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" id="langDropdown" data-bs-toggle="dropdown">
-                            {% trans "Idioma" %}
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-globe me-2" aria-hidden="true"></i>
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% if LANGUAGE_CODE == 'es' %}
+                                Español
+                            {% elif LANGUAGE_CODE == 'en' %}
+                                English
+                            {% else %}
+                                {% trans "Idioma" %}
+                            {% endif %}
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/es/">{% trans "Español" %}</a></li>
-                            <li><a class="dropdown-item" href="/en/">{% trans "Inglés" %}</a></li>
+                        <ul class="dropdown-menu" aria-labelledby="langDropdown">
+                            <li>
+                                <a class="dropdown-item {% if LANGUAGE_CODE == 'es' %}active{% endif %}" href="/es/">
+                                    <i class="fas fa-check me-2 {% if LANGUAGE_CODE != 'es' %}invisible{% endif %}" aria-hidden="true"></i>
+                                    Español
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if LANGUAGE_CODE == 'en' %}active{% endif %}" href="/en/">
+                                    <i class="fas fa-check me-2 {% if LANGUAGE_CODE != 'en' %}invisible{% endif %}" aria-hidden="true"></i>
+                                    English
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -124,7 +145,7 @@
 </script>
 
 <!-- Contenido dinámico -->
-<main class="main-container mt-5">
+<main class="main-container mt-5" id="main-content" tabindex="-1">
     {% block content %}
     {% endblock %}
 </main>
