@@ -1,64 +1,87 @@
 {% extends "base.html" %}
 {% load static %}
 {% load i18n %}
+{% load currency_filters %}
 
 {% block content %}
 <div class="container my-5">
-    <h2 class="text-center mb-4">{% trans "🛒 Carrito de Compras" %}</h2>
+    <h2 class="text-center mb-4" style="color: var(--verde-pino); font-family: 'Playfair Display', serif;">
+        <i class="fas fa-shopping-cart me-2"></i>{% trans "Mi Carrito de Compras" %}
+    </h2>
 
     {% if carrito %}
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered align-middle shadow-sm">
-                <thead class="table-dark">
-                    <tr>
-                        <th>{% trans "Producto" %}</th>
-                        <th>{% trans "Cantidad" %}</th>
-                        <th>{% trans "Precio unitario" %}</th>
-                        <th>{% trans "Subtotal" %}</th>
-                        <th>{% trans "Acciones" %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for id, item in carrito.items %}
-                        <tr>
-                            <td>{{ item.nombre }}</td>
-                            <td>{{ item.cantidad }}</td>
-                            <td>${{ item.precio }}</td>
-                            <td>
-                                ${{ item.precio|floatformat:2|add:item.cantidad|floatformat:2 }}
-                            </td>
-                            <td>
-                                <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm btn-success">
-                                    <i class="fas fa-plus"></i>
-                                </a>
-                                <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-minus"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background: linear-gradient(135deg, var(--verde-pino) 0%, var(--verde-oscuro) 100%); color: white;">
+                            <tr>
+                                <th>{% trans "Producto" %}</th>
+                                <th class="text-center">{% trans "Cantidad" %}</th>
+                                <th class="text-end">{% trans "Precio unitario" %}</th>
+                                <th class="text-end">{% trans "Subtotal" %}</th>
+                                <th class="text-center">{% trans "Acciones" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for id, item in carrito.items %}
+                                <tr>
+                                    <td><strong style="color: var(--verde-oscuro);">{{ item.nombre }}</strong></td>
+                                    <td class="text-center">
+                                        <span class="badge" style="background: var(--verde-pino); color: white; font-size: 14px; padding: 6px 12px;">
+                                            {{ item.cantidad }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">{{ item.precio|format_cop }} COP</td>
+                                    <td class="text-end">
+                                        <strong style="color: var(--dorado);">{{ item.precio|multiply:item.cantidad|format_cop }} COP</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm" style="background: var(--verde-pino); color: white;">
+                                            <i class="fas fa-plus"></i>
+                                        </a>
+                                        <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm" style="background: var(--dorado); color: white;">
+                                            <i class="fas fa-minus"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <h4>
-                {% trans "Total:" %}
-                <span class="text-success">${{ total }}</span>
-            </h4>
-            <div>
-                <a href="{% url 'limpiar_carrito' %}" class="btn btn-warning">
-                    <i class="fas fa-trash"></i> {% trans "Vaciar carrito" %}
-                </a>
-                <a href="#" class="btn btn-primary">
-                    <i class="fas fa-credit-card"></i> {% trans "Comprar" %}
-                </a>
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0" style="color: var(--verde-oscuro);">
+                            {% trans "Total:" %}
+                            <span style="color: var(--dorado); font-weight: 700;">{{ total|format_cop }} COP</span>
+                        </h4>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'home' %}" class="btn" style="border: 2px solid var(--verde-pino); color: var(--verde-pino); background: white; padding: 10px 24px; border-radius: 8px; font-weight: 600;">
+                            <i class="fas fa-arrow-left me-2"></i>{% trans "Seguir comprando" %}
+                        </a>
+                        <a href="{% url 'limpiar_carrito' %}" class="btn" style="background: var(--dorado); color: white; padding: 10px 24px; border-radius: 8px; font-weight: 600;">
+                            <i class="fas fa-trash me-2"></i>{% trans "Vaciar carrito" %}
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     {% else %}
-        <div class="alert alert-info text-center shadow-sm">
-            <i class="fas fa-shopping-cart fa-2x mb-2"></i>
-            <p class="mb-0">{% trans "Tu carrito está vacío." %}</p>
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-shopping-cart fa-4x mb-3" style="color: var(--verde-pino); opacity: 0.3;"></i>
+                <h4 style="color: var(--verde-oscuro);">{% trans "Tu carrito está vacío" %}</h4>
+                <p class="text-muted mb-4">{% trans "Explora nuestros productos y agrega lo que te guste" %}</p>
+                <a href="{% url 'home' %}" class="btn" style="background: var(--verde-pino); color: white; padding: 12px 32px; border-radius: 8px; font-weight: 600;">
+                    <i class="fas fa-shopping-bag me-2"></i>{% trans "Ver productos" %}
+                </a>
+            </div>
         </div>
     {% endif %}
 </div>

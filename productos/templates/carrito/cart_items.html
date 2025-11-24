@@ -1,0 +1,35 @@
+{% load i18n %}
+{% load currency_filters %}
+
+{% if carrito %}
+    {% for id, item in carrito.items %}
+        <div class="cart-item d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+            <div>
+                <strong style="color: var(--verde-oscuro);">{{ item.nombre }}</strong><br>
+                <small class="text-muted">{{ item.precio|format_cop }} x {{ item.cantidad }}</small>
+            </div>
+            <div>
+                <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm" style="background: var(--verde-pino); color: white;">+</a>
+                <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm" style="background: var(--dorado); color: white;">-</a>
+            </div>
+        </div>
+    {% endfor %}
+    
+    <div class="mt-4 pt-3 border-top">
+        <div class="d-flex justify-content-between mb-3">
+            <strong style="color: var(--verde-oscuro);">{% trans "Total:" %}</strong>
+            <strong style="color: var(--dorado);">{{ total|format_cop }} COP</strong>
+        </div>
+        
+        <div class="d-grid gap-2">
+            <a href="{% url 'limpiar_carrito' %}" class="btn" style="background: var(--dorado); color: white;">
+                <i class="fas fa-trash me-2"></i>{% trans "Vaciar Carrito" %}
+            </a>
+        </div>
+    </div>
+{% else %}
+    <div class="text-center text-muted py-5">
+        <i class="fas fa-shopping-cart fa-3x mb-3" style="color: var(--verde-pino); opacity: 0.3;"></i>
+        <p class="mb-0">{% trans "Tu carrito está vacío." %}</p>
+    </div>
+{% endif %}

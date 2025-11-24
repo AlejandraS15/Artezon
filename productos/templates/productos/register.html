@@ -1,173 +1,412 @@
 {% load i18n %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Artezon - Registro de Usuario" %}</title>
+    <title>{% trans "Registro - Artezon" %}</title>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Estilos generales Artezon -->
     <style>
         :root {
-            --vanilla: #F3E5AB;
-            --tobacco: #7C482B;
-            --mountain: #2F3E46;
-            --sand: #C2B280;
-            --mahogany: #420D09;
-            --white: #FFFFFF;
+            --verde-pino: #2C5F4F;
+            --dorado: #C9A961;
+            --verde-oscuro: #1A3D31;
+            --blanco-cremoso: #FDFBF7;
+            --gris-suave: #F8F6F2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
+            font-family: 'Inter', sans-serif;
+            background: var(--blanco-cremoso);
             min-height: 100vh;
-            background: linear-gradient(135deg, var(--vanilla) 0%, var(--sand) 50%, var(--white) 100%);
-            font-family: 'Poppins', sans-serif;
-            color: var(--mountain);
-            margin: 0;
-            padding: 0;
+            display: flex;
+            flex-direction: column;
         }
 
-        header {
-            background: var(--tobacco);
-            padding: 2rem;
-            text-align: center;
-            border-radius: 0 0 2rem 2rem;
-            box-shadow: 0 6px 24px rgba(44, 24, 12, 0.3);
+        /* Header minimalista */
+        .minimal-header {
+            background: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        header h1 {
+        .minimal-header .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--vanilla);
-            text-shadow: 0 3px 8px rgba(0,0,0,0.3);
-            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--verde-pino);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .minimal-header .logo i {
+            color: var(--dorado);
+        }
+
+        /* Main Container */
+        .register-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(44, 95, 79, 0.03) 0%, rgba(201, 169, 97, 0.03) 100%);
         }
 
         .register-container {
-            background: var(--white);
-            border: 2px solid var(--sand);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            max-width: 550px;
-            margin: 3rem auto;
-            box-shadow: 0 6px 24px rgba(44, 24, 12, 0.15);
-        }
-
-        .register-container h2 {
-            color: var(--mahogany);
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-family: 'Playfair Display', serif;
-        }
-
-        label {
-            color: var(--mountain);
-            font-weight: 600;
-            margin-bottom: 0.4rem;
-        }
-
-        input, select {
-            border: 2px solid var(--sand);
-            border-radius: 1rem;
-            padding: 0.8rem 1.2rem;
-            font-size: 1rem;
-            margin-bottom: 1rem;
             width: 100%;
-            transition: all 0.3s ease;
+            max-width: 600px;
         }
 
-        input:focus, select:focus {
-            border-color: var(--tobacco);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(124, 72, 43, 0.2);
-        }
-
-        .btn-secundario {
-            background: var(--sand);
-            color: var(--mahogany);
-            border: 2px solid var(--tobacco);
-            border-radius: 2rem;
-            font-weight: 600;
-            padding: 0.7rem 2rem;
-            transition: 0.3s;
-        }
-
-        .btn-secundario:hover {
-            background: var(--tobacco);
-            color: var(--vanilla);
-        }
-
-        a {
-            color: var(--tobacco);
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        a:hover {
-            color: var(--mahogany);
-            text-decoration: underline;
-        }
-
-        footer {
+        .register-header {
             text-align: center;
-            padding: 1rem;
-            background: var(--tobacco);
-            color: var(--vanilla);
-            border-radius: 2rem 2rem 0 0;
-            margin-top: 4rem;
+            margin-bottom: 40px;
+        }
+
+        .register-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            color: var(--verde-pino);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .register-header p {
+            color: #6B7280;
+            font-size: 16px;
+        }
+
+        .decorative-line {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--verde-pino), var(--dorado));
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        .register-form {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(44, 95, 79, 0.08);
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--verde-oscuro);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: var(--gris-suave);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--verde-pino);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(44, 95, 79, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: var(--gris-suave);
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--verde-pino);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(44, 95, 79, 0.1);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9CA3AF;
+            font-size: 18px;
+        }
+
+        .password-toggle:hover {
+            color: var(--verde-pino);
+        }
+
+        .error-message {
+            color: #DC2626;
+            font-size: 13px;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .field-error {
+            border-color: #DC2626 !important;
+            background: #FEF2F2 !important;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--verde-pino) 0%, var(--verde-oscuro) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(44, 95, 79, 0.3);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .form-footer a {
+            color: var(--verde-pino);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-footer a:hover {
+            color: var(--dorado);
+        }
+
+        .benefits-section {
+            background: var(--gris-suave);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .benefits-section h3 {
+            font-size: 18px;
+            color: var(--verde-pino);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            color: #4B5563;
+            font-size: 14px;
+        }
+
+        .benefit-item i {
+            color: var(--dorado);
+            font-size: 18px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .register-header h1 {
+                font-size: 32px;
+            }
+
+            .register-form {
+                padding: 30px 20px;
+            }
+
+            .minimal-header {
+                padding: 15px 20px;
+            }
         }
     </style>
 </head>
-
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>{% trans "Artezon - Crochet Artesanal" %}</h1>
+    <!-- Minimal Header -->
+    <header class="minimal-header">
+        <a href="{% url 'home' %}" class="logo">
+            <i class="fas fa-heart"></i>
+            Artezon
+        </a>
     </header>
 
-    <!-- Formulario de Registro -->
-    <main>
-        <section class="register-container">
-            <h2>{% trans "Registro de usuario" %}</h2>
-
-            <form method="post">
-                {% csrf_token %}
-                {{ form.non_field_errors }}
-
-                {% for field in form %}
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <p style="color:#b30000; font-size:0.9rem; margin-top:-0.5rem;">
-                            {{ field.errors|striptags }}
-                        </p>
-                    {% endif %}
-                {% endfor %}
-
-                <button class="btn-secundario w-100 mt-2" type="submit">
-                    {% trans "Registrarme" %}
-                </button>
-            </form>
-
-            <div style="text-align:center; margin-top:1rem;">
-                <a href="{% url 'login' %}">
-                    {% trans "¿Ya tienes cuenta? Inicia sesión aquí" %}
-                </a>
+    <!-- Main Container -->
+    <div class="register-wrapper">
+        <div class="register-container">
+            
+            <div class="register-header">
+                <h1>{% trans "Únete a Artezon" %}</h1>
+                <p>{% trans "Crea tu cuenta y forma parte de nuestra comunidad artesanal" %}</p>
+                <div class="decorative-line"></div>
             </div>
-        </section>
-    </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 {% trans "Artezon - Artesanías hechas con amor" %}</p>
-    </footer>
+            <!-- Benefits Section -->
+            <div class="benefits-section">
+                <h3><i class="fas fa-gift"></i> {% trans "¿Por qué unirte?" %}</h3>
+                <div class="benefit-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>{% trans "Compra artesanías únicas hechas a mano" %}</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-store"></i>
+                    <span>{% trans "Vende tus propias creaciones" %}</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-heart"></i>
+                    <span>{% trans "Conecta con artesanos de todo el país" %}</span>
+                </div>
+            </div>
 
+            <div class="register-form">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" id="registerForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-grid">
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}" class="form-label">
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <span class="error-message">
+                                        {{ field.errors|striptags }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button class="submit-btn" type="submit">
+                        <i class="fas fa-user-plus"></i> {% trans "Crear mi cuenta" %}
+                    </button>
+                </form>
+
+                <div class="form-footer">
+                    <p style="color: #6B7280; margin-bottom: 8px;">{% trans "¿Ya tienes cuenta?" %}</p>
+                    <a href="{% url 'login' %}">{% trans "Inicia sesión aquí" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Style form fields dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+            const selects = document.querySelectorAll('select');
+
+            inputs.forEach(input => {
+                input.classList.add('form-input');
+                
+                // Add appropriate placeholders
+                if (input.type === 'email') {
+                    input.placeholder = 'correo@ejemplo.com';
+                } else if (input.name.includes('nombre') || input.name.includes('name')) {
+                    input.placeholder = 'Tu nombre';
+                } else if (input.name.includes('apellido')) {
+                    input.placeholder = 'Tu apellido';
+                }
+
+                // Highlight errors
+                if (input.closest('.form-group').querySelector('.error-message')) {
+                    input.classList.add('field-error');
+                }
+            });
+
+            selects.forEach(select => {
+                select.classList.add('form-select');
+            });
+
+            // Password toggle (if needed)
+            const passwordFields = document.querySelectorAll('input[type="password"]');
+            passwordFields.forEach(field => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'password-wrapper';
+                field.parentNode.insertBefore(wrapper, field);
+                wrapper.appendChild(field);
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.type = 'button';
+                toggleBtn.className = 'password-toggle';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                toggleBtn.onclick = function() {
+                    if (field.type === 'password') {
+                        field.type = 'text';
+                        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                    } else {
+                        field.type = 'password';
+                        toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                    }
+                };
+                wrapper.appendChild(toggleBtn);
+            });
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

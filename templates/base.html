@@ -1,4 +1,5 @@
 {% load static i18n %}
+{% load currency_filters %}
 <!DOCTYPE html>
 <html lang="{% get_current_language as LANGUAGE_CODE %}">
 <head>
@@ -78,9 +79,14 @@
                     </li>
 
                     <!-- Carrito -->
-                    <li class="nav-item ms-3">
-                        <a href="#" id="cart-icon" class="nav-link text-white">
+                    <li class="nav-item ms-3 position-relative">
+                        <a href="{% url 'ver_carrito' %}" class="nav-link text-white position-relative">
                             <i class="fas fa-shopping-cart fa-lg"></i>
+                            {% if carrito %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background-color: var(--dorado); color: var(--verde-oscuro); font-size: 10px; padding: 3px 6px;">
+                                {{ carrito|length }}
+                            </span>
+                            {% endif %}
                         </a>
                     </li>
                     
@@ -97,71 +103,23 @@
     </nav>
 </header>
 
-<!-- Carrito desplegable -->
-<div class="cart-dropdown shadow-lg" id="cart-dropdown" style="display:none; position:fixed; top:0; right:0; width:320px; height:100%; background:#fff; z-index:1050; overflow-y:auto;">
-    <div class="cart-dropdown-header d-flex justify-content-between align-items-center p-3 border-bottom">
-        <h5 class="mb-0">{% trans "Mi Carrito" %}</h5>
-        <button id="cart-close" class="btn border-0 bg-transparent">
-            <i class="fas fa-times" style="color: red; font-size: 1.3rem;"></i>
-        </button>
+<!-- Carrito desplegable con Bootstrap Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+    <div class="offcanvas-header" style="background: linear-gradient(135deg, var(--verde-pino) 0%, var(--verde-oscuro) 100%);">
+        <h5 class="offcanvas-title text-white" id="cartOffcanvasLabel">
+            <i class="fas fa-shopping-cart me-2"></i>{% trans "Mi Carrito" %}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-
-    <div class="cart-dropdown-body p-3" id="cart-body">
-    {% if carrito %}
-        {% for id, item in carrito.items %}
-            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                <div>
-                    <strong>{{ item.nombre }}</strong><br>
-                    <small>${{ item.precio }} x {{ item.cantidad }}</small>
-                </div>
-                <div>
-                    <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm btn-success">+</a>
-                    <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm btn-danger">-</a>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="text-center text-muted">
-                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
-                <p class="mb-0">{% trans "Tu carrito está vacío." %}</p>
-            </div>
-        {% endif %}
-    </div>
-
-    <div class="cart-dropdown-footer p-3 border-top">
-        {% if carrito %}
-            <div class="d-flex justify-content-between mb-3">
-                <strong>{% trans "Total:" %}</strong>
-                <span>${{ total }}</span>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'limpiar_carrito' %}" class="btn btn-warning btn-sm">
-                    <i class="fas fa-trash"></i> {% trans "Vaciar" %}
-                </a>
-
-                <a href="#" class="btn btn-primary btn-sm">
-                    <i class="fas fa-credit-card"></i> {% trans "Comprar" %}
-                </a>
-            </div>
-        {% endif %}
+    
+    <div class="offcanvas-body">
+        {% include 'carrito/cart_items.html' %}
     </div>
 </div>
 
-<!-- Script para abrir/cerrar carrito -->
+<!-- Script para el carrito -->
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const cartIcon = document.getElementById("cart-icon");
-    const cartDropdown = document.getElementById("cart-dropdown");
-    const cartClose = document.getElementById("cart-close");
-
-    cartIcon.addEventListener("click", () => {
-        cartDropdown.style.display = "block";
-    });
-
-    cartClose.addEventListener("click", () => {
-        cartDropdown.style.display = "none";
-    });
-});
+// El carrito ahora es un enlace directo a la página de carrito
 </script>
 
 <!-- Contenido dinámico -->
@@ -171,15 +129,16 @@ document.addEventListener("DOMContentLoaded", function() {
 </main>
 
 <!-- Footer -->
-<footer class="text-center" style="background: var(--mahogany); color: var(--vanilla);">
-    <div class="footer-links">
-        <a href="https://instagram.com" style="color: #C9A961;"><i class="fab fa-instagram"></i></a>
-        <a href="https://wa.me/57xxxxxxxxxx" style="color: #C9A961;"><i class="fab fa-whatsapp"></i></a>
-        <a href="mailto:contacto@artezon.com" style="color: #C9A961;"><i class="fas fa-envelope"></i></a>
-    </div>
-
-    <div class="footer-social">
-        <p class="mb-1" style="color: #C9A961;">&copy; 2025 Artezon - {% trans "Artesanías hechas con amor" %}</p>
+<footer class="footer-modern">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p class="footer-text mb-3">
+                    {% trans "Donde cada hilo cuenta una historia. Conecta con artesanas y descubre piezas únicas hechas con amor" %}
+                </p>
+                <p class="mb-0">&copy; 2025 Artezon. {% trans "Todos los derechos reservados" %}</p>
+            </div>
+        </div>
     </div>
 </footer>
 

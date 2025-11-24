@@ -1,40 +1,89 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load currency_filters %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <h2 class="mb-4 text-center">{% trans "Mis Productos" %}</h2>
+            <!-- Header con botón de agregar -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">{% trans "Mis Productos" %}</h2>
+                <a href="{% url 'agregar_producto' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>{% trans "Agregar Producto" %}
+                </a>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{% trans "Total Productos" %}</h5>
+                            <p class="display-4 text-primary">{{ total_productos }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{% trans "Productos Activos" %}</h5>
+                            <p class="display-4 text-success">{{ productos_activos }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{% trans "Valor Inventario" %}</h5>
+                            <p class="display-4 text-info">{{ valor_inventario|format_cop }} COP</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de productos -->
             <div class="row">
                 {% for producto in productos %}
                     <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm p-2">
+                        <div class="card h-100 shadow-sm">
                             {% if producto.imagen %}
-                                <div class="p-2">
-                                    <img src="{{ producto.imagen.url }}" class="card-img-top rounded" alt="{% trans 'Imagen de producto' %}" style="object-fit:cover; height:200px;">
-                                </div>
+                                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{% trans 'Imagen de producto' %}" style="object-fit:cover; height:200px;">
                             {% else %}
-                                <div class="card-img-top d-flex align-items-center justify-content-center p-2" style="height:200px; background:#f5e9da;">
+                                <div class="card-img-top d-flex align-items-center justify-content-center" style="height:200px; background:#f5e9da;">
                                     <span class="text-muted">{% trans "Sin imagen" %}</span>
                                 </div>
                             {% endif %}
                             <div class="card-body">
                                 <h5 class="card-title">{{ producto.name }}</h5>
-
-                                <p class="card-text mb-1"><strong>{% trans "Descripción:" %}</strong> {{ producto.description }}</p>
+                                <p class="card-text mb-1"><strong>{% trans "Descripción:" %}</strong> {{ producto.description|truncatewords:10 }}</p>
                                 <p class="card-text mb-1"><strong>{% trans "Categoría:" %}</strong> {{ producto.category }}</p>
                                 <p class="card-text mb-1"><strong>{% trans "Material:" %}</strong> {{ producto.material }}</p>
                                 <p class="card-text mb-1"><strong>{% trans "Color:" %}</strong> {{ producto.color }}</p>
                                 <p class="card-text mb-1"><strong>{% trans "Stock:" %}</strong> {{ producto.stock }}</p>
-                                <p class="card-text mb-1"><strong>{% trans "Precio:" %}</strong> ${{ producto.price }}</p>
+                                <p class="card-text mb-1"><strong>{% trans "Precio:" %}</strong> {{ producto.price|format_cop }} COP</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 d-flex gap-2">
+                                <a href="{% url 'editar_producto' producto.id %}" class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="fas fa-edit me-1"></i>{% trans "Editar" %}
+                                </a>
+                                <form method="post" action="{% url 'eliminar_producto' producto.id %}" class="flex-fill" onsubmit="return confirm('{% trans "¿Estás seguro de eliminar este producto?" %}');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                        <i class="fas fa-trash me-1"></i>{% trans "Eliminar" %}
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 {% empty %}
                     <div class="col-12">
-                        <div class="alert alert-warning text-center">
-                            {% trans "No tienes productos aún." %}
+                        <div class="alert alert-info text-center">
+                            <h4>{% trans "No tienes productos aún." %}</h4>
+                            <p>{% trans "Comienza a vender agregando tu primer producto." %}</p>
+                            <a href="{% url 'agregar_producto' %}" class="btn btn-success mt-2">
+                                <i class="fas fa-plus me-2"></i>{% trans "Agregar mi primer producto" %}
+                            </a>
                         </div>
                     </div>
                 {% endfor %}

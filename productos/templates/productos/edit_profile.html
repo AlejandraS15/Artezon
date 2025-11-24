@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
 
-            <h2 class="mb-4 text-center">✏️ {% trans "Editar Perfil" %}</h2>
+            <h2 class="mb-4 text-center" style="color: var(--verde-pino); font-family: 'Playfair Display', serif;">{% trans "Editar Perfil" %}</h2>
 
             <!-- Mostrar mensajes -->
             {% if messages %}
@@ -20,44 +20,59 @@
                 </div>
             {% endif %}
 
-            <form method="POST" enctype="multipart/form-data" class="card shadow-sm p-4 rounded-3">
+            <form method="POST" enctype="multipart/form-data" class="unified-form">
                 {% csrf_token %}
 
                 <!-- Datos de usuario -->
-                <h5 class="mb-3">👤 {% trans "Información Personal" %}</h5>
-                {{ user_form.as_p }}
+                <h5 class="form-section-title">{% trans "Información Personal" %}</h5>
+                <div class="form-grid">
+                    {% for field in user_form %}
+                    <div class="form-group">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="error-message">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
 
                 <!-- Datos de perfil -->
-                <h5 class="mt-4 mb-3">📞 {% trans "Información de Contacto" %}</h5>
-
-                {{ profile_form.telefono.label_tag }}
-                {{ profile_form.telefono }}
-
-                {{ profile_form.direccion.label_tag }}
-                {{ profile_form.direccion }}
-
-                {{ profile_form.fecha_nacimiento.label_tag }}
-                {{ profile_form.fecha_nacimiento }}
-
-                {{ profile_form.ciudad.label_tag }}
-                {{ profile_form.ciudad }}
-
-                {{ profile_form.tipo_lana.label_tag }}
-                {{ profile_form.tipo_lana }}
-
-                <div class="mb-3">
-                    <label class="form-label">{% trans "Colores favoritos" %}</label>
-                    {{ profile_form.colores_favoritos }}
+                <h5 class="form-section-title">{% trans "Información de Contacto" %}</h5>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">{{ profile_form.telefono.label }}</label>
+                        {{ profile_form.telefono }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{{ profile_form.direccion.label }}</label>
+                        {{ profile_form.direccion }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{{ profile_form.fecha_nacimiento.label }}</label>
+                        {{ profile_form.fecha_nacimiento }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{{ profile_form.ciudad.label }}</label>
+                        {{ profile_form.ciudad }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{{ profile_form.tipo_lana.label }}</label>
+                        {{ profile_form.tipo_lana }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Colores favoritos" %}</label>
+                        {{ profile_form.colores_favoritos }}
+                    </div>
                 </div>
 
                 <!-- Botones -->
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="{% url 'profile' %}" class="btn btn-secondary">
+                <div class="form-actions">
+                    <a href="{% url 'profile' %}" class="btn-cancel">
                         {% trans "Cancelar" %}
                     </a>
-
-                    <button type="submit" class="btn btn-success">
-                        💾 {% trans "Guardar cambios" %}
+                    <button type="submit" class="btn-submit">
+                        {% trans "Guardar cambios" %}
                     </button>
                 </div>
 

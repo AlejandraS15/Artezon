@@ -1,190 +1,417 @@
 {% load i18n %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Artezon - Crochet y Más" %}</title>
+    <title>{% trans "Iniciar Sesión - Artezon" %}</title>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Estilos -->
     <style>
         :root {
-            --vanilla: #F3E5AB;
-            --tobacco: #7C482B;
-            --mountain: #2F3E46;
-            --sand: #C2B280;
-            --mahogany: #420D09;
-            --white: #FFFFFF;
+            --verde-pino: #2C5F4F;
+            --dorado: #C9A961;
+            --verde-oscuro: #1A3D31;
+            --blanco-cremoso: #FDFBF7;
+            --gris-claro: #9CA3AF;
+            --gris-medio: #6B7280;
+            --borde-sutil: #E8E5DF;
+            --fondo-input: #FAFAF9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
+            font-family: 'Inter', sans-serif;
+            background: var(--blanco-cremoso);
             min-height: 100vh;
-            background: linear-gradient(135deg, var(--vanilla) 0%, var(--sand) 50%, var(--white) 100%);
-            font-family: 'Poppins', sans-serif;
-            color: var(--mountain);
-            margin: 0;
-            padding: 0;
+            overflow-x: hidden;
         }
 
-        header {
-            background: var(--tobacco);
-            padding: 2rem;
+        /* Split Screen Layout */
+        .login-wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Side - Branding */
+        .login-brand-side {
+            flex: 1;
+            background: linear-gradient(135deg, #2C5F4F 0%, #1A3D31 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Círculos decorativos sutiles */
+        .login-brand-side::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            right: 15%;
+            width: 250px;
+            height: 250px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .login-brand-side::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            left: 10%;
+            width: 180px;
+            height: 180px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 1;
             text-align: center;
-            border-radius: 0 0 2rem 2rem;
-            box-shadow: 0 6px 24px rgba(44, 24, 12, 0.3);
+            max-width: 420px;
+            animation: fadeIn 0.8s ease;
         }
 
-        header h1 {
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .brand-content h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--vanilla);
-            text-shadow: 0 3px 8px rgba(0,0,0,0.3);
-            margin: 0;
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: white;
+            letter-spacing: -1px;
         }
 
-        .product-card {
-            background: var(--white);
-            border: 2px solid var(--sand);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 6px 20px rgba(44, 24, 12, 0.15);
-            transition: all 0.3s ease;
+        .brand-content p {
+            font-family: 'Inter', sans-serif;
+            font-size: 17px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
         }
 
-        .product-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 30px rgba(44, 24, 12, 0.25);
+        /* Right Side - Form */
+        .login-form-side {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 80px;
+            background: #FDFBF7;
         }
 
-        .product-card h2 {
-            color: var(--mahogany);
-            margin-bottom: 0.8rem;
-        }
-
-        .login-container {
-            background: var(--white);
-            border: 2px solid var(--sand);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            max-width: 450px;
-            margin: 0 auto 2rem auto;
-            box-shadow: 0 6px 24px rgba(44, 24, 12, 0.15);
-        }
-
-        .login-container h2 {
-            color: var(--mahogany);
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            font-family: 'Playfair Display', serif;
-        }
-
-        label {
-            color: var(--mountain);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        input, select {
-            border: 2px solid var(--sand);
-            border-radius: 1rem;
-            padding: 0.8rem 1.2rem;
-            font-size: 1rem;
-            margin-bottom: 1rem;
+        .login-form-container {
             width: 100%;
-            transition: all 0.3s ease;
+            max-width: 420px;
+            animation: fadeInUp 0.6s ease;
         }
 
-        input:focus, select:focus {
-            border-color: var(--tobacco);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(124, 72, 43, 0.2);
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .btn-secundario {
-            background: var(--sand);
-            color: var(--mahogany);
-            border: 2px solid var(--tobacco);
-            border-radius: 2rem;
-            font-weight: 600;
-            padding: 0.7rem 2rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secundario:hover {
-            background: var(--tobacco);
-            color: var(--vanilla);
-        }
-
-        a {
-            color: var(--tobacco);
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-            color: var(--mahogany);
-        }
-
-        footer {
+        .login-form-header {
             text-align: center;
-            padding: 1rem;
-            background: var(--tobacco);
-            color: var(--vanilla);
-            border-radius: 2rem 2rem 0 0;
+            margin-bottom: 48px;
+        }
+
+        .login-form-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            color: #2C5F4F;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .login-form-header p {
+            font-family: 'Inter', sans-serif;
+            color: #6B7280;
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1A3D31;
+            margin-bottom: 8px;
+        }
+
+        .form-input, select {
+            width: 100%;
+            height: 48px;
+            padding: 14px 18px;
+            background: #FAFAF9;
+            border: 1.5px solid #E8E5DF;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            color: #1A3D31;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: #9CA3AF;
+            font-weight: 400;
+        }
+
+        .form-input:focus, select:focus {
+            outline: none;
+            border-color: #2C5F4F;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(44, 95, 79, 0.08);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9CA3AF;
+            font-size: 20px;
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: #2C5F4F;
+        }
+
+        .submit-btn {
+            width: 100%;
+            height: 52px;
+            background: #2C5F4F;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .submit-btn:hover {
+            background: #C9A961;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(201, 169, 97, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #E8E5DF;
+        }
+
+        .form-footer p {
+            font-size: 14px;
+            color: #6B7280;
+            display: inline;
+        }
+
+        .form-footer a {
+            color: #C9A961;
+            text-decoration: none;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        .form-footer a:hover {
+            color: #2C5F4F;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #FEE2E2;
+            border-left: 4px solid #EF4444;
+            color: #DC2626;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+            }
+
+            .login-brand-side {
+                min-height: 320px;
+                padding: 40px 24px;
+            }
+
+            .brand-content h1 {
+                font-size: 42px;
+            }
+
+            .brand-content p {
+                font-size: 15px;
+            }
+
+            .login-form-side {
+                padding: 40px 24px;
+            }
+
+            .login-form-header h2 {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>{% trans "Artezon - Crochet Artesanal" %}</h1>
-    </header>
-
-    <!-- Contenedor principal -->
-    <main class="container">
-
-        <!-- Producto destacado -->
-        <section class="product-card">
-            <h2>{% trans "Producto Destacado" %}</h2>
-            <p>{% trans "Hermoso amigurumi hecho a mano con amor y dedicación." %}</p>
-            <button class="btn btn-primary">{% trans "Comprar Ahora" %}</button>
-        </section>
-
-        <!-- Formulario de login funcional -->
-        <section class="login-container">
-            <h2>{% trans "Iniciar sesión" %}</h2>
-            <form method="post" action="{% url 'login' %}">
-                {% csrf_token %}
-                {{ form.non_field_errors }}
-                <label for="id_email">{% trans "Correo electrónico" %}</label>
-                {{ form.email }}
-                <label for="id_password">{% trans "Contraseña" %}</label>
-                {{ form.password }}
-                <label for="id_tipo_usuario">{% trans "Tipo de usuario" %}</label>
-                {{ form.tipo_usuario }}
-                <button class="btn-secundario w-100 mt-2" type="submit">{% trans "Entrar" %}</button>
-            </form>
-            <div style="margin-top:1rem; text-align:center;">
-                <a href="{% url 'register' %}">{% trans "¿No tienes cuenta? Regístrate aquí" %}</a>
+    <!-- Split Screen Login -->
+    <div class="login-wrapper">
+        
+        <!-- Left Side: Branding -->
+        <div class="login-brand-side">
+            <div class="brand-content">
+                <h1>Artezon</h1>
+                <p>{% trans "Donde cada hilo cuenta una historia." %}</p>
+                <p>{% trans "Conecta con artesanas y descubre piezas" %}</p>
+                <p>{% trans "únicas hechas con amor." %}</p>
             </div>
-        </section>
+        </div>
 
-    </main>
+        <!-- Right Side: Form -->
+        <div class="login-form-side">
+            <div class="login-form-container">
+                <div class="login-form-header">
+                    <h2>{% trans "¡Bienvenido de nuevo!" %}</h2>
+                    <p>{% trans "Ingresa tus datos para continuar" %}</p>
+                </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 {% trans "Artezon - Artesanías hechas con amor" %}</p>
-    </footer>
+                {% if form.non_field_errors %}
+                    <div class="error-message">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
 
+                <form method="post" action="{% url 'login' %}" id="loginForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_email" class="form-label">
+                            {% trans "Correo electrónico" %}
+                        </label>
+                        {{ form.email }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_password" class="form-label">
+                            {% trans "Contraseña" %}
+                        </label>
+                        <div class="password-wrapper">
+                            {{ form.password }}
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <span id="toggleIcon">👁️</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_tipo_usuario" class="form-label">
+                            {% trans "Tipo de usuario" %}
+                        </label>
+                        {{ form.tipo_usuario }}
+                    </div>
+
+                    <button class="submit-btn" type="submit">
+                        {% trans "Iniciar Sesión" %}
+                    </button>
+                </form>
+
+                <div class="form-footer">
+                    <p>{% trans "¿No tienes cuenta?" %}</p>
+                    <a href="{% url 'register' %}">{% trans "Regístrate" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('id_password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+
+        // Style form fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('id_email');
+            const passwordInput = document.getElementById('id_password');
+            const tipoUsuarioSelect = document.getElementById('id_tipo_usuario');
+
+            if (emailInput) {
+                emailInput.classList.add('form-input');
+                emailInput.placeholder = 'correo@dominio.com';
+            }
+
+            if (passwordInput) {
+                passwordInput.classList.add('form-input');
+                passwordInput.placeholder = 'Contraseña';
+            }
+
+            if (tipoUsuarioSelect) {
+                tipoUsuarioSelect.style.cursor = 'pointer';
+            }
+        });
+    </script>
 </body>
 </html>

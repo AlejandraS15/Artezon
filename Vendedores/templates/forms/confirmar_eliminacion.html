@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load currency_filters %}
 
 {% block content %}
 <div class="container mt-5">
@@ -17,7 +18,7 @@
                     {% endif %}
 
                     <p><strong>{% trans "Descripción:" %}</strong> {{ producto.description }}</p>
-                    <p><strong>{% trans "Precio:" %}</strong> ${{ producto.price }}</p>
+                    <p><strong>{% trans "Precio:" %}</strong> {{ producto.price|format_cop }} COP</p>
 
                     <form method="post">
                         {% csrf_token %}

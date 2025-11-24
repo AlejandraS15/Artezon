@@ -170,3 +170,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 WHATSAPP_NUMBER = "573205306403"
 
 REPORT_IMPL = "pdf"
+
+# Email Configuration (Development - Console Backend)
+# Para producción, cambiar a SMTP real
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'tu-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'tu-contraseña-de-app'
+DEFAULT_FROM_EMAIL = 'noreply@artezon.com'

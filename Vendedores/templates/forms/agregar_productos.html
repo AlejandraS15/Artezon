@@ -4,41 +4,45 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow-lg border-0">
-                <div class="card-header text-center" style="background-color: #f5e9da; color: #7d5a4e;">
-                    <h2 class="mb-0">{% trans "Añadir Producto" %}</h2>
+        <div class="col-md-8">
+            <h2 class="mb-4 text-center" style="color: var(--verde-pino); font-family: 'Playfair Display', serif;">{% trans "Añadir Producto" %}</h2>
+            
+            <form method="post" enctype="multipart/form-data" id="producto-form" class="unified-form">
+                {% csrf_token %}
+                <div class="form-grid">
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.name == "imagen" %}
+                            <img id="preview-imagen" src="#" alt="Previsualización" style="display:none; max-width:100%; max-height:200px; margin-top:10px; border-radius: 8px;" />
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text" style="color: #6B7280; font-size: 13px;">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="error-message">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 </div>
-                <div class="card-body" style="background-color: #fffaf3;">
-                    <form method="post" enctype="multipart/form-data" id="producto-form">
-                        {% csrf_token %}
-                        {% for field in form %}
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold" style="color: #7d5a4e;">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.name == "imagen" %}
-                                    <img id="preview-imagen" src="#" alt="Previsualización" style="display:none; max-width:100%; max-height:200px; margin-top:10px;" />
-                                {% endif %}
-                                {% if field.help_text %}
-                                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                                {% endif %}
-                                {% for error in field.errors %}
-                                    <div class="text-danger small">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
-                        <div class="mb-3">
-                            <button type="button" class="btn w-100 py-2 fw-bold" style="background-color: #e2c8b0; color: #7d5a4e; border: none;" onclick="calcularPrecioSugerido()">
-                                Mostrar precio sugerido
-                            </button>
-                            <input type="text" id="precio-sugerido" class="form-control mt-2" placeholder="Precio sugerido" readonly style="display:none;">
-                        </div>
-                        <button type="submit" class="btn w-100 py-2 fw-bold" style="background-color: #f5e9da; color: #7d5a4e; border: none;">
-                            {% trans "Guardar producto" %}
-                        </button>
-                    </form>
+                
+                <div class="mb-3">
+                    <button type="button" class="btn-secondary-action" onclick="calcularPrecioSugerido()">
+                        {% trans "Mostrar precio sugerido" %}
+                    </button>
+                    <input type="text" id="precio-sugerido" class="form-control mt-2" placeholder="{% trans 'Precio sugerido' %}" readonly style="display:none; border: 1.5px solid var(--dorado); background: #FAFAF9;">
                 </div>
-            </div>
+                
+                <div class="form-actions">
+                    <a href="{% url 'mis_productos' %}" class="btn-cancel">
+                        {% trans "Cancelar" %}
+                    </a>
+                    <button type="submit" class="btn-submit">
+                        {% trans "Guardar producto" %}
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

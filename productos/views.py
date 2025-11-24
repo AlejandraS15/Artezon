@@ -5,37 +5,44 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import quote
-from django.utils.translation import gettext as _
 
 from .product_form import ProductForm
 from .models import Product, Profile, SellerProfile, Store
-from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm, ExternalAPIForm
+from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm
 from .seller_forms import SellerProfileForm, StoreForm
 from .email_login_form import EmailLoginForm
 from django.conf import settings
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.contrib import messages
+
+from .models import Product
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ProductSerializer
 import requests
 from django.views.generic import FormView
+from django.shortcuts import render
+from .forms import ExternalAPIForm
+
+# ────────── VISTAS PRODUCTO ──────────
 
 
-# ────────── API REST ──────────
+
 class ProductListAPIView(APIView):
     def get(self, request):
         products = Product.objects.filter(is_active=True)
         serializer = ProductSerializer(products, many=True, context={'request': request})
         return Response(serializer.data)
 
-
 class ExternalAPIFormView(FormView):
     template_name = "external_api/external_api.html"
     form_class = ExternalAPIForm
-    success_url = "."
+    success_url = "."  # Para recargar la misma página después del POST
 
     def form_valid(self, form):
         url = form.cleaned_data["url"]
@@ -49,6 +56,7 @@ class ExternalAPIFormView(FormView):
         except Exception as e:
             error = f"Error al consumir el servicio: {str(e)}"
 
+        # Renderizamos manualmente para poder enviar data y error
         return render(
             self.request,
             self.template_name,
@@ -59,8 +67,7 @@ class ExternalAPIFormView(FormView):
             }
         )
 
-
-# ────────── VISTAS PRODUCTO ──────────
+# Vista para crear producto (requiere perfil de vendedor)
 @login_required
 def create_product(request):
     """Vista para crear producto (requiere perfil de vendedor)."""
@@ -303,6 +310,25 @@ def agregar_al_carrito(request, pk):
     request.session["carrito"] = carrito
     request.session.modified = True
 
+    # Si es una petición AJAX, devolver JSON con HTML del carrito
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.template.loader import render_to_string
+        total_items = sum(item["cantidad"] for item in carrito.values())
+        total = sum(item["precio"] * item["cantidad"] for item in carrito.values())
+        
+        # Renderizar el HTML del carrito
+        cart_html = render_to_string('carrito/cart_items.html', {
+            'carrito': carrito,
+            'total': total
+        }, request=request)
+        
+        return JsonResponse({
+            "success": True,
+            "message": f"Se agregó {producto.name} al carrito",
+            "total_items": total_items,
+            "cart_html": cart_html
+        })
+    
     messages.success(request, _("Se agregó %(producto)s al carrito.") % {"producto": producto.name})
     return redirect("ver_carrito")
 
@@ -371,7 +397,7 @@ def create_seller_and_store(request):
             store = store_form.save(commit=False)
             store.seller = seller
             store.save()
-            messages.success(request, 'Perfil de vendedor y tienda creados correctamente.')
+            messages.success(request, _("✅ Perfil de vendedor y tienda creados correctamente."))
             return redirect('home')
         else:
             messages.error(request, _("Por favor corrige los errores en el formulario."))
@@ -401,7 +427,7 @@ def edit_seller_and_store(request):
         if seller_form.is_valid() and store_form.is_valid():
             seller_form.save()
             store_form.save()
-            messages.success(request, 'Perfil de vendedor y tienda actualizados correctamente.')
+            messages.success(request, _("✅ Perfil de vendedor y tienda actualizados correctamente."))
             return redirect('profile')
         else:
             messages.error(request, _("Por favor corrige los errores en el formulario."))
