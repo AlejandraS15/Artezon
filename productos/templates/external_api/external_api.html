@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
 {% load widget_tweaks %}
+{% load i18n %}
 
 {% block content %}
 
 <div class="container shadow p-4 rounded mt-5" style="background:white; max-width: 800px;">
 
     <h2 class="text-center mb-4" style="font-family: 'Playfair Display'; color: var(--mahogany);">
-        Consumir servicio externo
+        {% trans "Consumir servicio externo" %}
     </h2>
 
     <!-- FORMULARIO -->
@@ -15,13 +16,15 @@
         {% csrf_token %}
 
         <div class="mb-3">
-            <label class="form-label fw-bold" style="color: var(--mahogany);">URL del servicio:</label>
+            <label class="form-label fw-bold" style="color: var(--mahogany);">
+                {% trans "URL del servicio:" %}
+            </label>
             {{ form.url|add_class:"form-control" }}
         </div>
 
         <button type="submit" class="btn btn-primary w-100" 
                 style="background: var(--tobacco); border: none;">
-            Consultar
+            {% trans "Consultar" %}
         </button>
     </form>
 
@@ -34,7 +37,9 @@
 
     <!-- RESPUESTA JSON -->
     {% if data %}
-        <h4 class="mt-4" style="color: var(--mahogany); font-weight:600;">Resultado:</h4>
+        <h4 class="mt-4" style="color: var(--mahogany); font-weight:600;">
+            {% trans "Resultado:" %}
+        </h4>
         <pre class="p-3 rounded" 
              style="background: var(--sand); color: var(--mahogany); white-space: pre-wrap;">
 {{ data|safe }}
