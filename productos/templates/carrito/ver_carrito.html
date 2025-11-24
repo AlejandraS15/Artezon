@@ -10,7 +10,8 @@
     </h2>
 
     {% if carrito %}
-        <div class="card shadow-sm border-0 mb-4">
+        <!-- Vista Desktop: Tabla -->
+        <div class="card shadow-sm border-0 mb-4 d-none d-md-block">
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -37,12 +38,14 @@
                                         <strong style="color: var(--dorado);">{{ item.precio|multiply:item.cantidad|format_cop }} COP</strong>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm" style="background: var(--verde-pino); color: white;">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
-                                        <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm" style="background: var(--dorado); color: white;">
-                                            <i class="fas fa-minus"></i>
-                                        </a>
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-cart-quantity" style="background: var(--verde-pino); color: white;" aria-label="Aumentar cantidad de {{ item.nombre }}">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                            <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-cart-quantity" style="background: var(--dorado); color: white;" aria-label="Disminuir cantidad de {{ item.nombre }}">
+                                                <i class="fas fa-minus"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -50,6 +53,42 @@
                     </table>
                 </div>
             </div>
+        </div>
+
+        <!-- Vista Mobile: Cards -->
+        <div class="d-md-none">
+            {% for id, item in carrito.items %}
+                <div class="card shadow-sm border-0 mb-3 cart-item-mobile">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="mb-0" style="color: var(--verde-oscuro);">{{ item.nombre }}</h5>
+                            <span class="badge" style="background: var(--verde-pino); color: white; font-size: 14px; padding: 6px 12px;">
+                                {{ item.cantidad }}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">{% trans "Precio unitario:" %}</span>
+                                <span class="fw-semibold">{{ item.precio|format_cop }} COP</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">{% trans "Subtotal:" %}</span>
+                                <strong style="color: var(--dorado);">{{ item.precio|multiply:item.cantidad|format_cop }} COP</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-cart-quantity flex-fill" style="background: var(--verde-pino); color: white;" aria-label="Aumentar cantidad de {{ item.nombre }}">
+                                <i class="fas fa-plus me-2"></i>{% trans "Agregar" %}
+                            </a>
+                            <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-cart-quantity flex-fill" style="background: var(--dorado); color: white;" aria-label="Disminuir cantidad de {{ item.nombre }}">
+                                <i class="fas fa-minus me-2"></i>{% trans "Quitar" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
 
         <div class="card shadow-sm border-0">

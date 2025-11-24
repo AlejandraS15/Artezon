@@ -11,48 +11,59 @@
     {% endif %}
 
     <!-- 🔍 Barra de búsqueda y filtros -->
-    <form method="get" class="mb-4">
+    <form method="get" class="mb-3">
       <div class="row mb-3">
         <div class="col-12">
-          <input 
-            type="text" 
-            name="q" 
-            class="form-control rounded-pill border-success" 
-            placeholder="Buscar productos..."
-            value="{{ current_filters.q }}"
-          >
+          <div class="input-group">
+            <span class="input-group-text" style="background: var(--verde-pino); color: white; border: none;">
+              <i class="fas fa-search"></i>
+            </span>
+            <input 
+              type="text" 
+              name="q" 
+              class="form-control"
+              placeholder="Buscar productos por nombre o descripción..."
+              value="{{ current_filters.q }}"
+              style="border-left: none;"
+            >
+          </div>
         </div>
       </div>
 
-      <div class="row g-2 align-items-center">
+      <div class="row g-2 align-items-end mb-3">
         <div class="col-md-3">
+          <label class="form-label fw-semibold text-muted mb-1" style="font-size: 12px;">
+            <i class="fas fa-layer-group me-1"></i>MATERIAL
+          </label>
           <select name="material" class="form-select">
-            <option value="">Todos los materiales</option>
+            <option value="">Todos</option>
             {% for m in materiales %}
-              <option value="{{ m }}" {% if m == current_filters.material %}selected{% endif %}>
-                {{ m }}
-              </option>
+              <option value="{{ m }}" {% if m == current_filters.material %}selected{% endif %}>{{ m }}</option>
             {% endfor %}
           </select>
         </div>
 
         <div class="col-md-3">
+          <label class="form-label fw-semibold text-muted mb-1" style="font-size: 12px;">
+            <i class="fas fa-palette me-1"></i>COLOR
+          </label>
           <select name="color" class="form-select">
-            <option value="">Todos los colores</option>
+            <option value="">Todos</option>
             {% for c in colores %}
-              <option value="{{ c }}" {% if c == current_filters.color %}selected{% endif %}>
-                {{ c }}
-              </option>
+              <option value="{{ c }}" {% if c == current_filters.color %}selected{% endif %}>{{ c }}</option>
             {% endfor %}
           </select>
         </div>
 
         <div class="col-md-2">
+          <label class="form-label fw-semibold text-muted mb-1" style="font-size: 12px;">
+            <i class="fas fa-dollar-sign me-1"></i>DESDE
+          </label>
           <input 
             type="number" 
             name="price_min" 
             class="form-control"
-            placeholder="Precio min" 
+            placeholder="0"
             value="{{ current_filters.price_min }}"
             min="0"
             step="10000"
@@ -60,11 +71,14 @@
         </div>
 
         <div class="col-md-2">
+          <label class="form-label fw-semibold text-muted mb-1" style="font-size: 12px;">
+            <i class="fas fa-dollar-sign me-1"></i>HASTA
+          </label>
           <input 
             type="number" 
             name="price_max" 
             class="form-control"
-            placeholder="Precio máx" 
+            placeholder="∞"
             value="{{ current_filters.price_max }}"
             min="0"
             step="10000"
@@ -72,18 +86,66 @@
         </div>
 
         <div class="col-md-2 d-flex gap-2">
-          <button type="submit" class="btn btn-success w-50">Filtrar</button>
-          <a href="{% url 'home' %}" class="btn btn-outline-secondary w-50">Limpiar</a>
+          <button type="submit" class="btn flex-fill" style="background: var(--verde-pino); color: white; font-weight: 600;">
+            <i class="fas fa-filter me-1"></i>Aplicar
+          </button>
+          <a href="{% url 'home' %}" class="btn btn-outline-secondary" style="min-width: 44px;" title="Limpiar filtros">
+            <i class="fas fa-times"></i>
+          </a>
         </div>
       </div>
     </form>
 
-      <!-- Barra superior Favoritos -->
-      <div class="d-flex justify-content-end align-items-center mb-4" style="gap: 16px;">
-        <a href="{% url 'agregar_producto' %}" class="btn" style="border: 2px solid var(--verde-pino); color: var(--verde-pino); background: white; padding: 8px 20px; border-radius: 8px; font-weight: 600; transition: all 0.3s;">Agregar producto</a>
-        <a href="{% url 'favoritos' %}" class="btn" style="border: 2px solid var(--dorado); color: var(--dorado); background: white; padding: 8px 20px; border-radius: 8px; font-weight: 600; transition: all 0.3s;">Favoritos</a>
-        <a href="{% url 'edit_profile' %}" class="btn" style="border: 2px solid var(--verde-pino); color: var(--verde-pino); background: white; padding: 8px 20px; border-radius: 8px; font-weight: 600; transition: all 0.3s;">Perfil</a>
-      </div>
+    <!-- Chips de filtros activos -->
+    {% if current_filters.q or current_filters.material or current_filters.color or current_filters.price_min or current_filters.price_max %}
+    <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+      <span class="text-muted fw-semibold" style="font-size: 13px;">Filtros activos:</span>
+      
+      {% if current_filters.q %}
+      <span class="badge rounded-pill" style="background: var(--verde-pino); font-weight: 500; padding: 8px 12px;">
+        <i class="fas fa-search me-1"></i>"{{ current_filters.q }}"
+        <a href="?material={{ current_filters.material }}&color={{ current_filters.color }}&price_min={{ current_filters.price_min }}&price_max={{ current_filters.price_max }}" 
+           class="ms-2 text-white" style="text-decoration: none;">×</a>
+      </span>
+      {% endif %}
+      
+      {% if current_filters.material %}
+      <span class="badge rounded-pill" style="background: var(--dorado); font-weight: 500; padding: 8px 12px;">
+        <i class="fas fa-layer-group me-1"></i>{{ current_filters.material }}
+        <a href="?q={{ current_filters.q }}&color={{ current_filters.color }}&price_min={{ current_filters.price_min }}&price_max={{ current_filters.price_max }}" 
+           class="ms-2 text-white" style="text-decoration: none;">×</a>
+      </span>
+      {% endif %}
+      
+      {% if current_filters.color %}
+      <span class="badge rounded-pill" style="background: var(--verde-oscuro); font-weight: 500; padding: 8px 12px;">
+        <i class="fas fa-palette me-1"></i>{{ current_filters.color }}
+        <a href="?q={{ current_filters.q }}&material={{ current_filters.material }}&price_min={{ current_filters.price_min }}&price_max={{ current_filters.price_max }}" 
+           class="ms-2 text-white" style="text-decoration: none;">×</a>
+      </span>
+      {% endif %}
+      
+      {% if current_filters.price_min %}
+      <span class="badge rounded-pill" style="background: var(--gris-texto); font-weight: 500; padding: 8px 12px;">
+        <i class="fas fa-dollar-sign me-1"></i>Desde ${{ current_filters.price_min|floatformat:0 }}
+        <a href="?q={{ current_filters.q }}&material={{ current_filters.material }}&color={{ current_filters.color }}&price_max={{ current_filters.price_max }}" 
+           class="ms-2 text-white" style="text-decoration: none;">×</a>
+      </span>
+      {% endif %}
+      
+      {% if current_filters.price_max %}
+      <span class="badge rounded-pill" style="background: var(--gris-texto); font-weight: 500; padding: 8px 12px;">
+        <i class="fas fa-dollar-sign me-1"></i>Hasta ${{ current_filters.price_max|floatformat:0 }}
+        <a href="?q={{ current_filters.q }}&material={{ current_filters.material }}&color={{ current_filters.color }}&price_min={{ current_filters.price_min }}" 
+           class="ms-2 text-white" style="text-decoration: none;">×</a>
+      </span>
+      {% endif %}
+      
+      <a href="{% url 'home' %}" class="badge rounded-pill" style="background: #DC2626; font-weight: 500; padding: 8px 12px; text-decoration: none;">
+        <i class="fas fa-times-circle me-1"></i>Limpiar todos
+      </a>
+    </div>
+    {% endif %}
 
     <!-- 📦 Productos -->
     <div class="masonry-grid">
@@ -100,11 +162,17 @@
           <div class="product-info">
             <div class="product-name">{{ producto.name }}</div>
             <div class="product-price">{{ producto.price|format_cop }} COP</div>
-            <button type="button" class="add-to-cart-btn" onclick="agregarAlCarrito({{ producto.id }}, '{{ producto.name }}')">Agregar al Carrito</button>
+            <button type="button" class="add-to-cart-btn" onclick="agregarAlCarrito({{ producto.id }}, '{{ producto.name }}')" aria-label="Agregar {{ producto.name }} al carrito">
+              <i class="fas fa-shopping-cart me-2" aria-hidden="true"></i>Agregar al Carrito
+            </button>
             {% if producto.id|stringformat:"s" in request.session.favoritos %}
-              <button class="add-to-favorites-btn" data-producto-id="{{ producto.id }}" onclick="agregarAFavoritos(this, '{{ producto.name }}')" style="background-color: #2C5F4F;">★ En Favoritos</button>
+              <button class="add-to-favorites-btn" data-producto-id="{{ producto.id }}" onclick="agregarAFavoritos(this, '{{ producto.name }}')" style="background-color: #2C5F4F;" aria-label="Quitar {{ producto.name }} de favoritos" aria-pressed="true">
+                <i class="fas fa-heart me-2" aria-hidden="true"></i>En Favoritos
+              </button>
             {% else %}
-              <button class="add-to-favorites-btn" data-producto-id="{{ producto.id }}" onclick="agregarAFavoritos(this, '{{ producto.name }}')">Agregar a Favoritos</button>
+              <button class="add-to-favorites-btn" data-producto-id="{{ producto.id }}" onclick="agregarAFavoritos(this, '{{ producto.name }}')" aria-label="Agregar {{ producto.name }} a favoritos" aria-pressed="false">
+                <i class="far fa-heart me-2" aria-hidden="true"></i>Agregar a Favoritos
+              </button>
             {% endif %}
           </div>
         </div>
@@ -132,173 +200,6 @@
   </div>
 </main>
 
-<!-- Estilos visuales solicitados para home -->
-<style>
-    * {margin: 0; padding: 0; box-sizing: border-box;}
-    :root {
-        --blanco-cremoso: #FDFBF7;
-        --verde-pino: #2C5F4F;
-        --dorado: #C9A961;
-        --verde-oscuro: #1A3D31;
-    }
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: #FFFFFF;
-        color: var(--verde-oscuro);
-    }
-    .main-container {
-        max-width: 1440px;
-        margin: 0 auto;
-        padding: 100px 40px 60px;
-        background: #FFFFFF;
-    }
-    .masonry-grid {
-        column-count: 4;
-        column-gap: 20px;
-    }
-    .product-card {
-        width: 100%;
-        margin-bottom: 20px;
-        break-inside: avoid;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 12px rgba(44, 95, 79, 0.08);
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    .product-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(44, 95, 79, 0.15);
-    }
-    .product-image {
-        width: 100%;
-        height: auto;
-        display: block;
-        position: relative;
-    }
-    .product-image img {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
-    .product-overlay {
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(to bottom, transparent 0%, rgba(44, 95, 79, 0.85) 100%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding: 20px;
-    }
-    .product-card:hover .product-overlay {opacity: 1;}
-    .favorite-btn {
-        position: absolute;
-        top: 12px; right: 12px;
-        width: 36px; height: 36px;
-        border-radius: 50%;
-        background: white;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        font-size: 18px;
-    }
-    .favorite-btn.favorito {
-        background-color: var(--dorado);
-        color: white;
-    }
-    .favorite-btn:hover {
-        background-color: var(--dorado);
-        color: white;
-        transform: scale(1.1);
-    }
-    .product-info {padding: 16px;}
-    .product-name {
-        font-size: 15px;
-        font-weight: 600;
-        color: var(--verde-oscuro);
-        margin-bottom: 8px;
-    }
-    .product-price {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--dorado);
-        margin-bottom: 12px;
-    }
-    .add-to-cart-btn {
-        width: 100%;
-        padding: 12px;
-        background-color: var(--verde-pino);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .add-to-cart-btn:hover {
-        background-color: var(--dorado);
-        transform: scale(1.02);
-    }
-    .add-to-favorites-btn {
-        width: 100%;
-        padding: 12px;
-        margin-top: 8px;
-        background-color: var(--dorado);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .add-to-favorites-btn:hover {
-        background-color: var(--verde-pino);
-        transform: scale(1.02);
-    }
-    .toast-notification {
-        position: fixed;
-        top: 100px;
-        right: 30px;
-        background-color: var(--verde-pino);
-        color: white;
-        padding: 16px 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 9999;
-        animation: slideIn 0.3s ease-out;
-        font-weight: 600;
-    }
-    @keyframes slideIn {
-        from {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    /* Responsive */
-    @media (max-width: 1200px) {
-        .masonry-grid {column-count: 3;}
-    }
-    @media (max-width: 768px) {
-        .main-container {padding: 130px 20px 80px;}
-        .masonry-grid {column-count: 2; column-gap: 16px;}
-    }
-    @media (max-width: 480px) {
-        .masonry-grid {column-count: 1;}
-    }
-</style>
 <script>
 function agregarAFavoritos(btn, nombreProducto) {
   const productoId = btn.getAttribute('data-producto-id');

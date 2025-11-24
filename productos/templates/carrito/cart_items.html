@@ -8,9 +8,9 @@
                 <strong style="color: var(--verde-oscuro);">{{ item.nombre }}</strong><br>
                 <small class="text-muted">{{ item.precio|format_cop }} x {{ item.cantidad }}</small>
             </div>
-            <div>
-                <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-sm" style="background: var(--verde-pino); color: white;">+</a>
-                <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-sm" style="background: var(--dorado); color: white;">-</a>
+            <div class="d-flex gap-2">
+                <a href="{% url 'agregar_al_carrito' id %}" class="btn btn-cart-quantity" style="background: var(--verde-pino); color: white;" aria-label="Aumentar cantidad">+</a>
+                <a href="{% url 'quitar_del_carrito' id %}" class="btn btn-cart-quantity" style="background: var(--dorado); color: white;" aria-label="Disminuir cantidad">-</a>
             </div>
         </div>
     {% endfor %}
