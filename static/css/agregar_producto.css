@@ -1,0 +1,164 @@
+/*
+  Archivo: static/css/agregar_producto.css
+  Descripción: Estilos modernos y atractivos para el formulario de agregar producto, siguiendo la paleta y estilo de la maqueta proporcionada.
+*/
+:root {
+    --blanco-cremoso: #FDFBF7;
+    --verde-pino: #2C5F4F;
+    --dorado: #C9A961;
+    --verde-oscuro: #1A3D31;
+    --gris-texto: #4B5563;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--blanco-cremoso);
+}
+.agregar-header {
+    background: linear-gradient(135deg, var(--verde-pino) 0%, var(--verde-oscuro) 100%);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 12px rgba(44, 95, 79, 0.15);
+}
+.agregar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+}
+.agregar-nav {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+}
+.agregar-nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+.agregar-nav a:hover, .agregar-nav a.active {
+    color: var(--dorado);
+    font-weight: 600;
+}
+.agregar-container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 24px;
+}
+.agregar-page-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+.agregar-page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    color: var(--verde-pino);
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+.agregar-decorative-line {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--verde-pino), var(--dorado));
+    margin: 0 auto 24px;
+    border-radius: 2px;
+}
+.agregar-page-header p {
+    color: var(--gris-texto);
+    font-size: 17px;
+}
+.agregar-form {
+    background: white;
+    padding: 56px 48px;
+    border-radius: 24px;
+    box-shadow: 0 4px 6px rgba(44, 95, 79, 0.03), 0 10px 40px rgba(44, 95, 79, 0.1);
+    animation: fadeInUp 0.6s ease;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.agregar-form-group {
+    margin-bottom: 24px;
+}
+.agregar-form-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--verde-oscuro);
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+}
+.agregar-form-input, .agregar-form-select, .agregar-form-textarea {
+    width: 100%;
+    padding: 16px 18px;
+    border: 2.5px solid #E8E5DF;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    background-color: #FAFAF9;
+    color: var(--verde-oscuro);
+}
+.agregar-form-input:focus, .agregar-form-select:focus, .agregar-form-textarea:focus {
+    outline: none;
+    border-color: var(--verde-pino);
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(44, 95, 79, 0.08), 0 4px 12px rgba(44, 95, 79, 0.12);
+    transform: translateY(-2px);
+}
+.agregar-form-input::placeholder, .agregar-form-textarea::placeholder {
+    color: #A0A0A0;
+    font-weight: 400;
+}
+.agregar-btn-primary {
+    background: linear-gradient(135deg, var(--verde-pino) 0%, var(--verde-oscuro) 100%);
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 18px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(44, 95, 79, 0.25), 0 2px 4px rgba(44, 95, 79, 0.15);
+}
+.agregar-btn-primary:hover {
+    background: linear-gradient(135deg, var(--dorado) 0%, #B89748 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(201, 169, 97, 0.4), 0 6px 12px rgba(201, 169, 97, 0.25);
+}
+.agregar-btn-secondary {
+    background: white;
+    color: var(--verde-pino);
+    border: 2.5px solid var(--verde-pino);
+    border-radius: 12px;
+    padding: 18px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.agregar-btn-secondary:hover {
+    background-color: var(--verde-pino);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(44, 95, 79, 0.25);
+}
+.agregar-error-message {
+    color: #EF4444;
+    font-size: 14px;
+    margin-top: 4px;
+}
+@media (max-width: 768px) {
+    .agregar-header { padding: 16px 24px; }
+    .agregar-nav { gap: 16px; }
+    .agregar-container { margin: 40px auto; padding: 0 20px; }
+    .agregar-page-header h1 { font-size: 36px; }
+    .agregar-form { padding: 40px 28px; }
+}

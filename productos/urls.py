@@ -11,11 +11,12 @@ from .views import (
     create_seller_and_store,
     edit_seller_and_store,
     store_profile_view,
+    toggle_favorite,
 )
 
 urlpatterns = [
     path("producto/crear/", views.create_product, name="create_product"),
-    path("", landing_page, name="landing"),
+    path("", email_login_view, name="login"),  # Cambiado de landing_page a email_login_view
     path("home/", home, name="home"),
     path("register/", register_view, name="register"),
     path("login/", email_login_view, name="login"),
@@ -31,4 +32,6 @@ urlpatterns = [
     path("carrito/quitar/<int:pk>/", views.quitar_del_carrito, name="quitar_del_carrito"),
     path("carrito/limpiar/", views.limpiar_carrito, name="limpiar_carrito"),
     path("carrito/comprar/", views.comprar_carrito, name="comprar_carrito"),
+    path("favoritos/toggle/<int:producto_id>/", toggle_favorite, name="toggle_favorite"),
+        path("favoritos/", views.favoritos, name="favoritos"),
 ]

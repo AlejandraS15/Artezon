@@ -1,124 +1,359 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="container my-4">
-  {% if request.session.tipo_usuario == 'comprador_vendedor' %}
-  <div class="d-flex justify-content-end mb-3">
-    <a href="{% url 'store_profile' %}" class="btn btn-outline-primary">🏪 Ir a mi tienda</a>
-  </div>
-  {% endif %}
-
-  <!-- 🔍 Barra de búsqueda y filtros -->
-  <form method="get" class="mb-4">
-    <div class="row mb-3">
-      <div class="col-12">
-        <input 
-          type="text" 
-          name="q" 
-          class="form-control rounded-pill border-success" 
-          placeholder="Buscar productos..."
-          value="{{ current_filters.q }}"
-        >
-      </div>
+<main class="main-container">
+  <div class="container my-4">
+    {% if request.session.tipo_usuario == 'comprador_vendedor' %}
+    <div class="d-flex justify-content-end mb-3">
+      <a href="{% url 'store_profile' %}" class="btn btn-outline-primary">Ir a mi tienda</a>
     </div>
+    {% endif %}
 
-    <div class="row g-2 align-items-center">
-      <div class="col-md-3">
-        <select name="material" class="form-select">
-          <option value="">Todos los materiales</option>
-          {% for m in materiales %}
-            <option value="{{ m }}" {% if m == current_filters.material %}selected{% endif %}>
-              {{ m }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="col-md-3">
-        <select name="color" class="form-select">
-          <option value="">Todos los colores</option>
-          {% for c in colores %}
-            <option value="{{ c }}" {% if c == current_filters.color %}selected{% endif %}>
-              {{ c }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="col-md-2">
-        <input 
-          type="number" 
-          name="price_min" 
-          class="form-control"
-          placeholder="Precio min" 
-          value="{{ current_filters.price_min }}"
-          min="0"
-          step="10000"
-        >
-      </div>
-
-      <div class="col-md-2">
-        <input 
-          type="number" 
-          name="price_max" 
-          class="form-control"
-          placeholder="Precio máx" 
-          value="{{ current_filters.price_max }}"
-          min="0"
-          step="10000"
-        >
-      </div>
-
-      <div class="col-md-2 d-flex gap-2">
-        <button type="submit" class="btn btn-success w-50">Filtrar</button>
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary w-50">Limpiar</a>
-      </div>
-    </div>
-  </form>
-
-  <!-- 📦 Productos -->
-  <div class="row g-4">
-    {% for producto in productos %}
-      <div class="col-md-4 col-lg-3">
-        <div class="card shadow-sm h-100">
-          {% if producto.imagen %}
-            <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.name }}">
-          {% else %}
-            <img src="{% static 'img/default.png' %}" class="card-img-top" alt="Sin imagen">
-          {% endif %}
-          <div class="card-body text-center">
-            <h5 class="card-title">{{ producto.name }}</h5>
-            <p class="card-text text-success fw-bold">${{ producto.price }}</p>
-            <hr>
-            <div class="text-start small">
-              <strong>Vendedor:</strong> {{ producto.seller.sellerprofile.nombre }}<br>
-              <strong>Contacto:</strong> {{ producto.seller.sellerprofile.contacto }}<br>
-              <strong>Tienda:</strong> {% if producto.seller.sellerprofile.store_set.first %}{{ producto.seller.sellerprofile.store_set.first.nombre }}{% else %}Sin tienda{% endif %}
-            </div>
-            <a href="{% url 'product_detail' producto.pk %}" class="btn btn-success btn-lg w-100 mt-2">Ver</a>
-          </div>
+    <!-- 🔍 Barra de búsqueda y filtros -->
+    <form method="get" class="mb-4">
+      <div class="row mb-3">
+        <div class="col-12">
+          <input 
+            type="text" 
+            name="q" 
+            class="form-control rounded-pill border-success" 
+            placeholder="Buscar productos..."
+            value="{{ current_filters.q }}"
+          >
         </div>
       </div>
-    {% empty %}
-      <div class="col-12">
-        <p class="text-center text-muted">No se encontraron productos.</p>
+
+      <div class="row g-2 align-items-center">
+        <div class="col-md-3">
+          <select name="material" class="form-select">
+            <option value="">Todos los materiales</option>
+            {% for m in materiales %}
+              <option value="{{ m }}" {% if m == current_filters.material %}selected{% endif %}>
+                {{ m }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <select name="color" class="form-select">
+            <option value="">Todos los colores</option>
+            {% for c in colores %}
+              <option value="{{ c }}" {% if c == current_filters.color %}selected{% endif %}>
+                {{ c }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <input 
+            type="number" 
+            name="price_min" 
+            class="form-control"
+            placeholder="Precio min" 
+            value="{{ current_filters.price_min }}"
+            min="0"
+            step="10000"
+          >
+        </div>
+
+        <div class="col-md-2">
+          <input 
+            type="number" 
+            name="price_max" 
+            class="form-control"
+            placeholder="Precio máx" 
+            value="{{ current_filters.price_max }}"
+            min="0"
+            step="10000"
+          >
+        </div>
+
+        <div class="col-md-2 d-flex gap-2">
+          <button type="submit" class="btn btn-success w-50">Filtrar</button>
+          <a href="{% url 'home' %}" class="btn btn-outline-secondary w-50">Limpiar</a>
+        </div>
       </div>
-    {% endfor %}
+    </form>
+
+      <!-- Barra superior Favoritos -->
+      <div class="d-flex justify-content-end align-items-center mb-4" style="gap: 16px;">
+        <a href="{% url 'agregar_producto' %}" class="btn btn-outline-success">Agregar producto</a>
+        <a href="{% url 'favoritos' %}" class="btn btn-outline-warning">Favoritos</a>
+        <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary">Perfil</a>
+      </div>
+
+    <!-- 📦 Productos -->
+    <div class="masonry-grid">
+      {% for producto in productos %}
+        <div class="product-card">
+          <div class="product-image">
+            {% if producto.imagen %}
+              <img src="{{ producto.imagen.url }}" alt="{{ producto.name }}">
+            {% else %}
+              <img src="{% static 'img/default.png' %}" alt="Sin imagen">
+            {% endif %}
+            <div class="product-overlay"></div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">{{ producto.name }}</div>
+            <div class="product-price">${{ producto.price }}</div>
+            <form method="post" action="{% url 'agregar_al_carrito' producto.id %}" style="margin:0;">
+              {% csrf_token %}
+              <button type="submit" class="add-to-cart-btn">Agregar al Carrito</button>
+            </form>
+            {% if producto.id|stringformat:"s" in request.session.favoritos %}
+              <button class="add-to-favorites-btn" data-producto-id="{{ producto.id }}" onclick="agregarAFavoritos(this, '{{ producto.name }}')" style="background-color: #2C5F4F;">★ En Favoritos</button>
+            {% else %}
+              <button class="add-to-favorites-btn" data-producto-id="{{ producto.id }}" onclick="agregarAFavoritos(this, '{{ producto.name }}')">Agregar a Favoritos</button>
+            {% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <p class="text-center text-muted">No se encontraron productos.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- 📑 Paginación -->
+    {% if is_paginated %}
+      <nav class="pagination justify-content-center mt-4" aria-label="Paginación">
+        {% if page_obj.has_previous %}
+          <a class="btn btn-outline-success me-2" href="?page={{ page_obj.previous_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Anterior</a>
+        {% endif %}
+
+        <span class="align-self-center mx-2">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+          <a class="btn btn-outline-success ms-2" href="?page={{ page_obj.next_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Siguiente</a>
+        {% endif %}
+      </nav>
+    {% endif %}
   </div>
+</main>
 
-  <!-- 📑 Paginación -->
-  {% if is_paginated %}
-    <nav class="pagination justify-content-center mt-4" aria-label="Paginación">
-      {% if page_obj.has_previous %}
-        <a class="btn btn-outline-success me-2" href="?page={{ page_obj.previous_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Anterior</a>
-      {% endif %}
+<!-- Estilos visuales solicitados para home -->
+<style>
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    :root {
+        --blanco-cremoso: #FDFBF7;
+        --verde-pino: #2C5F4F;
+        --dorado: #C9A961;
+        --verde-oscuro: #1A3D31;
+    }
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--blanco-cremoso);
+        color: var(--verde-oscuro);
+    }
+    .main-container {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 140px 40px 100px;
+        background: var(--blanco-cremoso);
+    }
+    .masonry-grid {
+        column-count: 4;
+        column-gap: 20px;
+    }
+    .product-card {
+        width: 100%;
+        margin-bottom: 20px;
+        break-inside: avoid;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(44, 95, 79, 0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(44, 95, 79, 0.15);
+    }
+    .product-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        position: relative;
+    }
+    .product-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .product-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to bottom, transparent 0%, rgba(44, 95, 79, 0.85) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 20px;
+    }
+    .product-card:hover .product-overlay {opacity: 1;}
+    .favorite-btn {
+        position: absolute;
+        top: 12px; right: 12px;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        font-size: 18px;
+    }
+    .favorite-btn.favorito {
+        background-color: var(--dorado);
+        color: white;
+    }
+    .favorite-btn:hover {
+        background-color: var(--dorado);
+        color: white;
+        transform: scale(1.1);
+    }
+    .product-info {padding: 16px;}
+    .product-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--verde-oscuro);
+        margin-bottom: 8px;
+    }
+    .product-price {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dorado);
+        margin-bottom: 12px;
+    }
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--verde-pino);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .add-to-cart-btn:hover {
+        background-color: var(--dorado);
+        transform: scale(1.02);
+    }
+    .add-to-favorites-btn {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        background-color: var(--dorado);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .add-to-favorites-btn:hover {
+        background-color: var(--verde-pino);
+        transform: scale(1.02);
+    }
+    .toast-notification {
+        position: fixed;
+        top: 100px;
+        right: 30px;
+        background-color: var(--verde-pino);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: slideIn 0.3s ease-out;
+        font-weight: 600;
+    }
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .masonry-grid {column-count: 3;}
+    }
+    @media (max-width: 768px) {
+        .main-container {padding: 130px 20px 80px;}
+        .masonry-grid {column-count: 2; column-gap: 16px;}
+    }
+    @media (max-width: 480px) {
+        .masonry-grid {column-count: 1;}
+    }
+</style>
+<script>
+function agregarAFavoritos(btn, nombreProducto) {
+  const productoId = btn.getAttribute('data-producto-id');
+  
+  fetch(`/favoritos/toggle/${productoId}/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({})
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.favorito) {
+      mostrarNotificacion(`"${nombreProducto}" se ha agregado a favoritos`);
+      btn.textContent = '★ En Favoritos';
+      btn.style.backgroundColor = '#2C5F4F';
+    } else {
+      mostrarNotificacion(`"${nombreProducto}" se ha quitado de favoritos`);
+      btn.textContent = 'Agregar a Favoritos';
+      btn.style.backgroundColor = '';
+    }
+  });
+}
 
-      <span class="align-self-center mx-2">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+function mostrarNotificacion(mensaje) {
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification';
+  toast.textContent = mensaje;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideIn 0.3s ease-out reverse';
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 300);
+  }, 3000);
+}
 
-      {% if page_obj.has_next %}
-        <a class="btn btn-outline-success ms-2" href="?page={{ page_obj.next_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Siguiente</a>
-      {% endif %}
-    </nav>
-  {% endif %}
-</div>
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+</script>
 {% endblock %}

@@ -1,51 +1,193 @@
-{% extends "base.html" %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <h2 class="mb-4 text-center">Mis Productos</h2>
-            <div class="row">
-                {% for producto in productos %}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm p-2">
-                            {% if producto.imagen %}
-                                <div class="p-2">
-                                    <img src="{{ producto.imagen.url }}" class="card-img-top rounded" alt="Imagen de producto" style="object-fit:cover; height:200px;">
-                                </div>
-                            {% else %}
-                                <div class="card-img-top d-flex align-items-center justify-content-center p-2" style="height:200px; background:#f5e9da;">
-                                    <span class="text-muted">Sin imagen</span>
-                                </div>
-                            {% endif %}
-                            <div class="card-body">
-                                <h5 class="card-title">{{ producto.name }}</h5>
-                                <p class="card-text mb-1"><strong>Descripción:</strong> {{ producto.description }}</p>
-                                <p class="card-text mb-1"><strong>Categoría:</strong> {{ producto.category }}</p>
-                                <p class="card-text mb-1"><strong>Material:</strong> {{ producto.material }}</p>
-                                <p class="card-text mb-1"><strong>Color:</strong> {{ producto.color }}</p>
-                                <p class="card-text mb-1"><strong>Stock:</strong> {{ producto.stock }}</p>
-                                <p class="card-text mb-1"><strong>Precio:</strong> ${{ producto.price }}</p>
-                                <a href="{% url 'editar_producto' producto.id %}" 
-                                   class="btn w-100 mb-2 fw-bold"
-                                   style="background-color: #f5e9da; color: #7d5a4e; border: none;">
-                                    Editar
-                                </a>
-                                <a href="{% url 'eliminar_producto' producto.id %}" 
-                                   class="btn w-100 fw-bold"
-                                   style="background-color: #e2c8b0; color: #7d5a4e; border: none;">
-                                    Eliminar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <div class="col-12">
-                        <div class="alert alert-warning text-center">No tienes productos aún.</div>
-                    </div>
-                {% endfor %}
-            </div>
+<link rel="stylesheet" href="{% static 'css/mis_productos.css' %}">
+<div class="header-misprod">
+    <a href="/" class="logo-misprod">Artezon</a>
+    <nav class="nav-misprod">
+        <a href="/">Inicio</a>
+        <a href="/vendedores/mis-productos/" class="active">Mis productos</a>
+        <a href="/vendedores/agregar/">Agregar producto</a>
+        <a href="/profile/">Perfil</a>
+    </nav>
+</div>
+<div class="hero-misprod">
+    <h1>Mis Productos</h1>
+    <div class="decorative-line"></div>
+    <p>Gestiona tu catálogo de artesanías</p>
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-title">Total de productos</div>
+            <div class="stat-value">{{ total_productos }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Activos</div>
+            <div class="stat-value">{{ productos_activos }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Valor inventario</div>
+            <div class="stat-value">${{ valor_inventario|floatformat:0 }}</div>
         </div>
     </div>
+    <div class="cta-misprod">
+        <a href="/vendedores/agregar/" class="cta-btn"><span style="font-size:22px;">＋</span> Agregar Nuevo Producto</a>
+    </div>
 </div>
+<div class="busqueda-misprod">
+    <span class="icono-busqueda"></span>
+    <input type="text" id="busquedaInput" placeholder="Buscar producto..." aria-label="Buscar producto">
+</div>
+<div class="filtros-misprod">
+    <button class="chip-filtro active" data-categoria="">Todos</button>
+    {% for categoria in categorias %}
+        <button class="chip-filtro inactive" data-categoria="{{ categoria }}">{{ categoria }}</button>
+    {% endfor %}
+</div>
+<div id="contadorFiltrados" style="text-align:center; color:var(--gris-texto); margin-bottom:12px; font-size:15px;"></div>
+<div class="grid-misprod" id="productosGrid">
+    {% for producto in productos %}
+        <div class="product-card" data-categoria="{{ producto.category }}" data-nombre="{{ producto.name }}">
+            <div class="product-img-wrapper">
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen.url }}" alt="Imagen de {{ producto.name }}" class="product-img" loading="lazy">
+                {% else %}
+                    <div class="product-img" style="background:#F5F3EF;display:flex;align-items:center;justify-content:center;height:100%;font-size:32px;color:#C9A961;">Sin imagen</div>
+                {% endif %}
+                {% if producto.status == 'activo' %}
+                    <span class="product-badge badge-activo">Activo</span>
+                {% elif producto.status == 'agotado' %}
+                    <span class="product-badge badge-agotado">Agotado</span>
+                {% elif producto.status == 'pausado' %}
+                    <span class="product-badge badge-pausado">Pausado</span>
+                {% endif %}
+            </div>
+            <div class="product-card-content">
+                <div>
+                    <div class="product-title" title="{{ producto.name }}">{{ producto.name }}</div>
+                    <div class="product-category"><span>🏷️</span> {{ producto.category }}</div>
+                    <div class="product-price">${{ producto.price|floatformat:0 }}</div>
+                    <div class="product-stock {% if producto.stock > 10 %}stock-verde{% elif producto.stock >= 5 %}stock-amarillo{% else %}stock-rojo{% endif %}">En stock: {{ producto.stock }} unidades</div>
+                    <div class="product-desc">{{ producto.description|truncatechars:80 }}</div>
+                    <div class="product-meta">
+                        <span title="Vistas">👁️ {{ producto.vistas|default:0 }}</span>
+                        <span title="Favoritos">❤️ {{ producto.favoritos|default:0 }}</span>
+                        <span title="Publicado">📅 {{ producto.fecha_publicacion|timesince }} atrás</span>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <a href="{% url 'product_detail' producto.id %}" class="action-btn ver" aria-label="Ver producto"><span></span> Ver</a>
+                    <a href="{% url 'editar_producto' producto.id %}" class="action-btn editar" aria-label="Editar producto"><span></span> Editar</a>
+                    <button class="action-btn eliminar" aria-label="Eliminar producto" onclick="abrirModalEliminar({{ producto.id }}, '{{ producto.name|escapejs }}', '{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% endif %}')"><span>🗑️</span> Eliminar</button>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+
+    {% endfor %}
+</div>
+<div class="paginacion-misprod">
+    {% if is_paginated %}
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="page-btn">&laquo;</a>
+        {% endif %}
+        {% for num in paginator.page_range %}
+            <a href="?page={{ num }}" class="page-btn {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="page-btn">&raquo;</a>
+        {% endif %}
+    {% endif %}
+</div>
+<!-- Modal eliminación -->
+<div id="modalOverlay" class="modal-overlay" style="display:none;">
+    <div class="modal-eliminar">
+        <div class="modal-icon">⚠️</div>
+        <h3>¿Eliminar producto?</h3>
+        <p>Esta acción no se puede deshacer</p>
+        <img id="modalImg" class="modal-img" src="" alt="Imagen producto" style="display:none;">
+        <div id="modalNombre" style="font-weight:600;margin-bottom:12px;"></div>
+        <form id="formEliminar" method="post" style="margin:0;">
+            {% csrf_token %}
+            <div class="modal-actions">
+                <button type="button" class="btn-cancelar" onclick="cerrarModalEliminar()">Cancelar</button>
+                <button type="submit" class="btn-eliminar">Eliminar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Toast notifications -->
+<div id="toastContainer"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/17.8.3/lazyload.min.js"></script>
+<script>
+// Filtros y búsqueda
+const busquedaInput = document.getElementById('busquedaInput');
+const productosGrid = document.getElementById('productosGrid');
+const chips = document.querySelectorAll('.chip-filtro');
+const cards = productosGrid ? Array.from(productosGrid.children) : [];
+const contadorFiltrados = document.getElementById('contadorFiltrados');
+let categoriaActiva = '';
+function filtrarProductos() {
+    const texto = busquedaInput.value.toLowerCase();
+    let count = 0;
+    cards.forEach(card => {
+        const nombre = card.getAttribute('data-nombre').toLowerCase();
+        const categoria = card.getAttribute('data-categoria');
+        const matchNombre = nombre.includes(texto);
+        const matchCategoria = !categoriaActiva || categoria === categoriaActiva;
+        if (matchNombre && matchCategoria) {
+            card.style.display = '';
+            count++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    contadorFiltrados.textContent = count + ' producto(s) mostrado(s)';
+}
+if (busquedaInput) {
+    busquedaInput.addEventListener('input', filtrarProductos);
+}
+chips.forEach(chip => {
+    chip.addEventListener('click', function() {
+        chips.forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        categoriaActiva = this.getAttribute('data-categoria');
+        filtrarProductos();
+    });
+});
+filtrarProductos();
+// Modal eliminación
+let productoAEliminar = null;
+function abrirModalEliminar(id, nombre, imgUrl) {
+    productoAEliminar = id;
+    document.getElementById('modalOverlay').style.display = 'flex';
+    document.getElementById('modalNombre').textContent = nombre;
+    const img = document.getElementById('modalImg');
+    if (imgUrl) {
+        img.src = imgUrl;
+        img.style.display = 'block';
+    } else {
+        img.style.display = 'none';
+    }
+    const form = document.getElementById('formEliminar');
+    form.action = `/vendedores/eliminar/${id}/`;
+}
+function cerrarModalEliminar() {
+    document.getElementById('modalOverlay').style.display = 'none';
+    productoAEliminar = null;
+}
+// Toast notifications
+function showToast(type, message) {
+    const icons = {success:'✔️', error:'❌', warning:'⚠️', info:'ℹ️'};
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerHTML = `<span class="toast-icon">${icons[type]||''}</span> <span>${message}</span> <button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+    document.getElementById('toastContainer').appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 3000);
+}
+// Animación stagger
+cards.forEach((card, i) => {
+    card.style.animationDelay = (i * 0.1) + 's';
+});
+// Lazy loading
+if (window.LazyLoad) { new LazyLoad({ elements_selector: '.product-img' }); }
+</script>
 {% endblock %}

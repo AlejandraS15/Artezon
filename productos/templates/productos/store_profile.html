@@ -6,7 +6,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm p-4 rounded-3">
-                <h2 class="mb-4 text-center">🏪 Mi Tienda</h2>
+                <h2 class="mb-4 text-center">Mi Tienda</h2>
                 {% if store.logotipo %}
                     <div class="text-center mb-3">
                         <img src="{{ store.logotipo.url }}" alt="Logotipo" style="max-width:120px; max-height:120px; border-radius:12px;">
@@ -24,7 +24,7 @@
                 </ul>
                 <div class="d-flex justify-content-between mt-3">
                     <a href="{% url 'home' %}" class="btn btn-outline-primary">🏠 Ir a inicio</a>
-                    <a href="{% url 'edit_seller_and_store' %}" class="btn btn-success">✏️ Editar tienda</a>
+                    <a href="{% url 'edit_seller_and_store' %}" class="btn btn-success">Editar tienda</a>
                 </div>
             </div>
         </div>

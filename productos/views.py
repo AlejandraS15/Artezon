@@ -1,17 +1,25 @@
-
-from .product_form import ProductForm
+# ────────── IMPORTS ──────────
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
+from django.contrib.auth import login
+from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import quote
 
+from .product_form import ProductForm
+from .models import Product, Profile, SellerProfile, Store
+from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm
+from .seller_forms import SellerProfileForm, StoreForm
+from .email_login_form import EmailLoginForm
 from django.conf import settings
-from django.shortcuts import redirect
-from django.contrib import messages
 
-from .models import Product
-
-# Vista para crear producto (requiere perfil de vendedor)
+# ────────── VISTAS PRODUCTO ──────────
 @login_required
 def create_product(request):
+    """Vista para crear producto (requiere perfil de vendedor)."""
     try:
         seller_profile = SellerProfile.objects.get(user=request.user)
     except SellerProfile.DoesNotExist:
@@ -29,18 +37,6 @@ def create_product(request):
     else:
         form = ProductForm()
     return render(request, 'productos/create_product.html', {'form': form})
-# ────────── IMPORTS ──────────
-from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Q
-from django.contrib.auth import login
-from django.contrib.auth.views import LogoutView
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages  # Para los mensajes flash
-
-from .models import Product, Profile, SellerProfile, Store
-from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm
-from .seller_forms import SellerProfileForm, StoreForm
-from .email_login_form import EmailLoginForm
 
 # ────────── VISTAS HOME ──────────
 def home(request):
@@ -90,6 +86,37 @@ def home(request):
         "colores": colores,
     }
     return render(request, "productos/home.html", context)
+
+
+# ────────── FAVORITOS ──────────
+@csrf_exempt
+def toggle_favorite(request, producto_id):
+    """Toggle favorito para un producto usando AJAX y sesión."""
+    if request.method == "POST":
+        favoritos = request.session.get("favoritos", [])
+        if not isinstance(favoritos, list):
+            favoritos = []
+        
+        producto_id_str = str(producto_id)
+        if producto_id_str in favoritos:
+            favoritos.remove(producto_id_str)
+            favorito = False
+        else:
+            favoritos.append(producto_id_str)
+            favorito = True
+        
+        request.session["favoritos"] = favoritos
+        request.session.modified = True
+        return JsonResponse({"favorito": favorito})
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+@login_required
+def favoritos(request):
+    """Vista para mostrar productos favoritos del usuario."""
+    favoritos_ids = request.session.get("favoritos", [])
+    productos = Product.objects.filter(id__in=favoritos_ids)
+    return render(request, "productos/favoritos.html", {"productos": productos})
 
 
 def landing_page(request):
@@ -157,7 +184,7 @@ def edit_profile(request):
             seller = seller_form.save(commit=False)
             seller.user = user
             seller.save()
-            messages.success(request, "✅ Perfil actualizado con éxito")
+            messages.success(request, "Perfil actualizado con éxito")
             return redirect("profile")
     else:
         user_form = UserUpdateForm(instance=user)
@@ -188,17 +215,12 @@ def product_detail(request, pk):
     }
     return render(request, "productos/product_detail.html", context)
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import Product
 
-# -------------------------------
-# Ver carrito
-# -------------------------------
+# ────────── VISTAS CARRITO ──────────
 def ver_carrito(request):
+    """Ver el carrito de compras."""
     carrito = request.session.get("carrito", {})
 
-    # Si el carrito no es diccionario, lo reseteamos
     if not isinstance(carrito, dict):
         carrito = {}
         request.session["carrito"] = carrito
@@ -212,17 +234,15 @@ def ver_carrito(request):
     })
 
 
-# -------------------------------
-# Agregar producto al carrito
-# -------------------------------
 def agregar_al_carrito(request, pk):
+    """Agregar producto al carrito."""
     carrito = request.session.get("carrito", {})
 
     if not isinstance(carrito, dict):
         carrito = {}
 
     producto = get_object_or_404(Product, pk=pk)
-    producto_id = str(producto.pk)  # clave como string
+    producto_id = str(producto.pk)
 
     if producto_id in carrito:
         carrito[producto_id]["cantidad"] += 1
@@ -240,10 +260,8 @@ def agregar_al_carrito(request, pk):
     return redirect("ver_carrito")
 
 
-# -------------------------------
-# Quitar producto del carrito
-# -------------------------------
 def quitar_del_carrito(request, pk):
+    """Quitar producto del carrito."""
     carrito = request.session.get("carrito", {})
 
     if not isinstance(carrito, dict):
@@ -264,10 +282,8 @@ def quitar_del_carrito(request, pk):
     return redirect("ver_carrito")
 
 
-# -------------------------------
-# Limpiar todo el carrito
-# -------------------------------
 def limpiar_carrito(request):
+    """Limpiar todo el carrito."""
     request.session["carrito"] = {}
     request.session.modified = True
     messages.warning(request, "El carrito fue vaciado.")
@@ -308,7 +324,7 @@ def create_seller_and_store(request):
             store = store_form.save(commit=False)
             store.seller = seller
             store.save()
-            messages.success(request, '✅ Perfil de vendedor y tienda creados correctamente.')
+            messages.success(request, 'Perfil de vendedor y tienda creados correctamente.')
             return redirect('home')
         else:
             messages.error(request, 'Por favor corrige los errores en el formulario.')
@@ -338,7 +354,7 @@ def edit_seller_and_store(request):
         if seller_form.is_valid() and store_form.is_valid():
             seller_form.save()
             store_form.save()
-            messages.success(request, '✅ Perfil de vendedor y tienda actualizados correctamente.')
+            messages.success(request, 'Perfil de vendedor y tienda actualizados correctamente.')
             return redirect('profile')
         else:
             messages.error(request, 'Por favor corrige los errores en el formulario.')

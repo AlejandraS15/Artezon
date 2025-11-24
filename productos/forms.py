@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+import re
 from .models import Profile, Color, Accesorio
 
 
@@ -22,6 +24,7 @@ class RegisterForm(UserCreationForm):
         widget=forms.PasswordInput(
             attrs={"class": "form-control", "placeholder": "Escribe tu contraseña"}
         ),
+        help_text="Mínimo 8 caracteres, debe incluir números y al menos 1 carácter especial (@#$%&*!)"
     )
     password2 = forms.CharField(
         label="Confirmar contraseña",
@@ -33,6 +36,20 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
+
+    def clean_password1(self):
+        password = self.cleaned_data.get('password1')
+        
+        if len(password) < 8:
+            raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
+        
+        if not re.search(r'\d', password):
+            raise ValidationError("La contraseña debe incluir al menos un número.")
+        
+        if not re.search(r'[@#$%&*!]', password):
+            raise ValidationError("La contraseña debe incluir al menos un carácter especial (@#$%&*!).")
+        
+        return password
 
 
 class UserUpdateForm(forms.ModelForm):

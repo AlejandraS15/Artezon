@@ -39,7 +39,15 @@ def agregar_producto(request):
 @login_required
 def mis_productos(request):
     productos = Product.objects.filter(seller=request.user)
-    return render(request, "manejoProductos/mis_productos.html", {"productos": productos})
+    total_productos = productos.count()
+    productos_activos = productos.filter(is_active=True).count()
+    valor_inventario = sum([p.price * p.stock for p in productos])
+    return render(request, "manejoProductos/mis_productos.html", {
+        "productos": productos,
+        "total_productos": total_productos,
+        "productos_activos": productos_activos,
+        "valor_inventario": valor_inventario,
+    })
 
 @login_required
 def eliminar_producto(request, producto_id):

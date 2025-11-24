@@ -1,55 +1,59 @@
-{% extends "base.html" %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow-lg border-0">
-                <div class="card-header text-center" style="background-color: #f5e9da; color: #7d5a4e;">
-                    <h2 class="mb-0">Editar Producto</h2>
-                </div>
-                <div class="card-body" style="background-color: #fffaf3;">
-                    <form method="post" enctype="multipart/form-data" id="editar-producto-form">
-                        {% csrf_token %}
-                        {% for field in form %}
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold" style="color: #7d5a4e;">{{ field.label }}</label>
-                                {% if field.name == "imagen" %}
-                                    {% if producto.imagen %}
-                                        <img id="preview-imagen" src="{{ producto.imagen.url }}" alt="Previsualización" style="max-width:100%; max-height:200px; margin-top:10px;" />
-                                        <!-- Solo muestra el input si el usuario quiere cambiar la imagen -->
-                                        <input type="file" name="imagen" id="id_imagen" class="form-control mt-2" />
-                                    {% else %}
-                                        {{ field }}
-                                        <img id="preview-imagen" src="#" alt="Previsualización" style="display:none; max-width:100%; max-height:200px; margin-top:10px;" />
-                                    {% endif %}
-                                {% else %}
-                                    {{ field }}
-                                {% endif %}
-                                {% if field.help_text %}
-                                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                                {% endif %}
-                                {% for error in field.errors %}
-                                    <div class="text-danger small">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
-                        <div class="mb-3">
-                            <button type="button" class="btn w-100 py-2 fw-bold" style="background-color: #e2c8b0; color: #7d5a4e; border: none;" onclick="calcularPrecioSugerido()">
-                                Mostrar precio sugerido
-                            </button>
-                            <input type="text" id="precio-sugerido" class="form-control mt-2" placeholder="Precio sugerido" readonly style="display:none;">
-                        </div>
-                        <button type="submit" class="btn w-100 py-2 fw-bold" style="background-color: #f5e9da; color: #7d5a4e; border: none;">
-                            Guardar cambios
-                        </button>
-                        <a href="{% url 'mis_productos' %}" class="btn btn-secondary w-100 mt-2">Cancelar</a>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="agregar-header">
+    <a href="/" class="agregar-logo">Artezon</a>
+    <nav class="agregar-nav">
+        <a href="/">Inicio</a>
+        <a href="/vendedores/mis-productos/">Mis productos</a>
+        <a href="#" class="active">Editar producto</a>
+        <a href="/profile/">Perfil</a>
+    </nav>
 </div>
+<div class="agregar-container">
+    <div class="agregar-page-header">
+        <h1>Editar Producto</h1>
+        <div class="agregar-decorative-line"></div>
+        <p>Actualiza los detalles de tu creación artesanal</p>
+    </div>
+    <form class="agregar-form" id="editar-producto-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="agregar-form-group">
+                <label class="agregar-form-label">{{ field.label }}</label>
+                {% if field.name == "imagen" %}
+                    {% if producto.imagen %}
+                        <img id="preview-imagen" src="{{ producto.imagen.url }}" alt="Previsualización" style="max-width:100%; max-height:200px; margin-top:10px;" />
+                        <input type="file" name="imagen" id="id_imagen" class="agregar-form-input mt-2" />
+                    {% else %}
+                        {{ field }}
+                        <img id="preview-imagen" src="#" alt="Previsualización" style="display:none; max-width:100%; max-height:200px; margin-top:10px;" />
+                    {% endif %}
+                {% else %}
+                    {{ field }}
+                {% endif %}
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="agregar-error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="agregar-form-group">
+            <button type="button" class="agregar-btn-secondary" style="width:100%;margin-bottom:10px;" onclick="calcularPrecioSugerido()">
+                Mostrar precio sugerido
+            </button>
+            <input type="text" id="precio-sugerido" class="agregar-form-input" placeholder="Precio sugerido" readonly style="display:none;">
+        </div>
+        <div class="agregar-form-group" style="margin-top:32px;">
+            <button type="submit" class="agregar-btn-primary" style="width:100%;">
+                Guardar cambios
+            </button>
+            <a href="{% url 'mis_productos' %}" class="agregar-btn-secondary" style="width:100%;margin-top:10px;">Cancelar</a>
+        </div>
+    </form>
+</div>
+<link rel="stylesheet" href="{% static 'css/agregar_producto.css' %}">
 <script>
 function calcularPrecioSugerido() {
     const material = document.getElementById("id_material")?.value;
