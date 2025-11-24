@@ -12,9 +12,13 @@ from .views import (
     edit_seller_and_store,
     store_profile_view,
     toggle_favorite,
+    ProductListAPIView,
+    ExternalAPIFormView
 )
 
 urlpatterns = [
+    path('api/products/', ProductListAPIView.as_view(), name='api_products'),
+    path('external_api/', ExternalAPIFormView.as_view(), name='external_api'),
     path("producto/crear/", views.create_product, name="create_product"),
     path("", email_login_view, name="login"),  # Cambiado de landing_page a email_login_view
     path("home/", home, name="home"),
@@ -33,5 +37,6 @@ urlpatterns = [
     path("carrito/limpiar/", views.limpiar_carrito, name="limpiar_carrito"),
     path("carrito/comprar/", views.comprar_carrito, name="comprar_carrito"),
     path("favoritos/toggle/<int:producto_id>/", toggle_favorite, name="toggle_favorite"),
-        path("favoritos/", views.favoritos, name="favoritos"),
+    path("favoritos/", views.favoritos, name="favoritos"),
+    path('export/', views.export_products_report, name='export_products'),
 ]

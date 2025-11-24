@@ -1,12 +1,22 @@
-# Entornos virtuales
+# Entorno virtual
 venv/
+env/
 
-# Cache de Python
+# Compilados de Python
 __pycache__/
 *.pyc
 
-# Base de datos local de Django
-db.sqlite3
 
-# Archivos de entorno
+# Archivos temporales de Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+staticfiles/
+
+# Archivos de migraciones compiladas
+*/migrations/__pycache__/
+
+# Archivos de configuración local
 .env

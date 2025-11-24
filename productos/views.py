@@ -5,16 +5,60 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import quote
+from django.utils.translation import gettext as _
 
 from .product_form import ProductForm
 from .models import Product, Profile, SellerProfile, Store
-from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm
+from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm, ExternalAPIForm
 from .seller_forms import SellerProfileForm, StoreForm
 from .email_login_form import EmailLoginForm
 from django.conf import settings
+
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import ProductSerializer
+import requests
+from django.views.generic import FormView
+
+
+# ────────── API REST ──────────
+class ProductListAPIView(APIView):
+    def get(self, request):
+        products = Product.objects.filter(is_active=True)
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class ExternalAPIFormView(FormView):
+    template_name = "external_api/external_api.html"
+    form_class = ExternalAPIForm
+    success_url = "."
+
+    def form_valid(self, form):
+        url = form.cleaned_data["url"]
+        data = None
+        error = None
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+        except Exception as e:
+            error = f"Error al consumir el servicio: {str(e)}"
+
+        return render(
+            self.request,
+            self.template_name,
+            {
+                "form": form,
+                "data": data,
+                "error": error,
+            }
+        )
+
 
 # ────────── VISTAS PRODUCTO ──────────
 @login_required
@@ -37,6 +81,9 @@ def create_product(request):
     else:
         form = ProductForm()
     return render(request, 'productos/create_product.html', {'form': form})
+
+from django.utils.translation import gettext as _
+from django.shortcuts import render
 
 # ────────── VISTAS HOME ──────────
 def home(request):
@@ -256,7 +303,7 @@ def agregar_al_carrito(request, pk):
     request.session["carrito"] = carrito
     request.session.modified = True
 
-    messages.success(request, f"Se agregó {producto.name} al carrito.")
+    messages.success(request, _("Se agregó %(producto)s al carrito.") % {"producto": producto.name})
     return redirect("ver_carrito")
 
 
@@ -277,7 +324,7 @@ def quitar_del_carrito(request, pk):
 
         request.session["carrito"] = carrito
         request.session.modified = True
-        messages.warning(request, "Producto eliminado del carrito.")
+        messages.warning(request, _("Producto eliminado del carrito."))
 
     return redirect("ver_carrito")
 
@@ -286,7 +333,7 @@ def limpiar_carrito(request):
     """Limpiar todo el carrito."""
     request.session["carrito"] = {}
     request.session.modified = True
-    messages.warning(request, "El carrito fue vaciado.")
+    messages.warning(request, _("El carrito fue vaciado."))
     return redirect("ver_carrito")
 
 
@@ -300,7 +347,7 @@ def store_profile_view(request):
         seller_profile = request.user.sellerprofile
         store = seller_profile.store
     except (SellerProfile.DoesNotExist, Store.DoesNotExist):
-        messages.info(request, 'Primero debes crear tu perfil de vendedor y tienda.')
+        messages.info(request, _("Primero debes crear tu perfil de vendedor y tienda."))
         return redirect('create_seller_and_store')
     return render(request, 'productos/store_profile.html', {'store': store})
 
@@ -327,7 +374,7 @@ def create_seller_and_store(request):
             messages.success(request, 'Perfil de vendedor y tienda creados correctamente.')
             return redirect('home')
         else:
-            messages.error(request, 'Por favor corrige los errores en el formulario.')
+            messages.error(request, _("Por favor corrige los errores en el formulario."))
     else:
         seller_form = SellerProfileForm()
         store_form = StoreForm()
@@ -357,7 +404,7 @@ def edit_seller_and_store(request):
             messages.success(request, 'Perfil de vendedor y tienda actualizados correctamente.')
             return redirect('profile')
         else:
-            messages.error(request, 'Por favor corrige los errores en el formulario.')
+            messages.error(request, _("Por favor corrige los errores en el formulario."))
     else:
         seller_form = SellerProfileForm(instance=seller_profile)
         store_form = StoreForm(instance=store)
@@ -367,6 +414,49 @@ def edit_seller_and_store(request):
         'store_form': store_form,
         'modo': 'editar',
     })
+
+
+def export_products_report(request):
+    """Exporta un reporte de productos como archivo (CSV o JSON según configuración).
+
+    Usa la fábrica `get_report_generator()` en `productos/factories.py`.
+    """
+    from .factories import get_report_generator
+    # usamos el modelo `Product` ya importado en este módulo
+    # Obtener más detalles de producto. Mapear seller__username -> seller_username
+    raw_rows = Product.objects.values(
+        "name",
+        "price",
+        "description",
+        "category",
+        "material",
+        "color",
+        "stock",
+        "created_at",
+        "seller__username",
+    )
+
+    rows = []
+    for r in raw_rows:
+        rows.append({
+            "name": r.get("name"),
+            "price": r.get("price"),
+            "description": r.get("description", ""),
+            "category": r.get("category", ""),
+            "material": r.get("material", ""),
+            "color": r.get("color", ""),
+            "stock": r.get("stock", 0),
+            # convertir created_at a ISO string para evitar problemas de serialización
+            "created_at": (r.get("created_at").isoformat() if r.get("created_at") else ""),
+            "seller_username": r.get("seller__username", ""),
+        })
+
+    generator = get_report_generator()
+    file_bytes = generator.generate(rows)
+
+    response = HttpResponse(file_bytes, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{generator.filename()}"'
+    return response
 
 def _formatear_items_carrito_para_mensaje(carrito):
     partes = []

@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
 
-            <h2 class="mb-4 text-center">Editar Perfil</h2>
+            <h2 class="mb-4 text-center">✏️ {% trans "Editar Perfil" %}</h2>
 
-            <!-- Mostrar mensajes (éxito o error) -->
+            <!-- Mostrar mensajes -->
             {% if messages %}
                 <div>
                     {% for message in messages %}
@@ -23,35 +24,43 @@
                 {% csrf_token %}
 
                 <!-- Datos de usuario -->
-                <h5 class="mb-3">👤 Información Personal</h5>
+                <h5 class="mb-3">👤 {% trans "Información Personal" %}</h5>
                 {{ user_form.as_p }}
 
                 <!-- Datos de perfil -->
-                <h5 class="mt-4 mb-3">📞 Información de Contacto</h5>
+                <h5 class="mt-4 mb-3">📞 {% trans "Información de Contacto" %}</h5>
+
                 {{ profile_form.telefono.label_tag }}
                 {{ profile_form.telefono }}
+
                 {{ profile_form.direccion.label_tag }}
                 {{ profile_form.direccion }}
+
                 {{ profile_form.fecha_nacimiento.label_tag }}
                 {{ profile_form.fecha_nacimiento }}
+
                 {{ profile_form.ciudad.label_tag }}
                 {{ profile_form.ciudad }}
+
                 {{ profile_form.tipo_lana.label_tag }}
                 {{ profile_form.tipo_lana }}
+
                 <div class="mb-3">
-                    <label class="form-label">Colores favoritos</label>
+                    <label class="form-label">{% trans "Colores favoritos" %}</label>
                     {{ profile_form.colores_favoritos }}
                 </div>
 
-                <!-- Datos de vendedor -->
-                <h5 class="mt-4 mb-3">Perfil de Vendedor (opcional)</h5>
-                {{ seller_form.as_p }}
-
                 <!-- Botones -->
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="{% url 'profile' %}" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-success">💾 Guardar cambios</button>
+                    <a href="{% url 'profile' %}" class="btn btn-secondary">
+                        {% trans "Cancelar" %}
+                    </a>
+
+                    <button type="submit" class="btn btn-success">
+                        💾 {% trans "Guardar cambios" %}
+                    </button>
                 </div>
+
             </form>
         </div>
     </div>

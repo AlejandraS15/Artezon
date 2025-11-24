@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'widget_tweaks',
     'productos',
     'Vendedores',
     'django.contrib.sites',
@@ -67,6 +70,7 @@ LOGOUT_REDIRECT_URL = 'landing'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -87,6 +91,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "productos.context_processors.get_random_quote",
             ],
         },
     },
@@ -123,13 +128,26 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+USE_L10N = True # habilitar localización (formatos de fecha/número)
+
 USE_TZ = True
+
+# rutas para archivos de traducción
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, "locale"),
+]
+
+# idiomas soportados (ej. español e inglés)
+LANGUAGES = [
+    ("es", "Español"),
+    ("en", "English"),
+]
 
 
 # Static files (CSS, JavaScript, Images)
@@ -150,3 +168,5 @@ MEDIA_ROOT = BASE_DIR / 'productos' / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 WHATSAPP_NUMBER = "573205306403"
+
+REPORT_IMPL = "pdf"

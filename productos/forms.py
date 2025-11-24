@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 import re
 from .models import Profile, Color, Accesorio
 
+class ExternalAPIForm(forms.Form):
+    url = forms.URLField(label="URL del servicio", required=True)
 
 class RegisterForm(UserCreationForm):
     username = forms.CharField(
