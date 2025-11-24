@@ -148,6 +148,7 @@
     {% endif %}
 
     <!-- 📦 Productos -->
+    <h2 class="section-header-aesthetic animate-fade-in-up">Nuestras Creaciones</h2>
     <div class="masonry-grid">
       {% for producto in productos %}
         <div class="product-card">
@@ -157,17 +158,21 @@
                 src="{{ producto.imagen.url }}" 
                 alt="{{ producto.name }}"
                 loading="lazy"
-                width="300"
-                height="300"
               >
             {% else %}
               <img 
                 src="{% static 'img/default.png' %}" 
                 alt="Sin imagen"
                 loading="lazy"
-                width="300"
-                height="300"
               >
+            {% endif %}
+            <!-- Product Badges -->
+            {% if producto.created_at and producto.created_at >= seven_days_ago %}
+              <span class="product-badge badge-nuevo">Nuevo</span>
+            {% elif producto.stock <= 3 and producto.stock > 0 %}
+              <span class="product-badge badge-popular">Popular</span>
+            {% else %}
+              <span class="product-badge badge-handmade">Hecho a mano</span>
             {% endif %}
             <div class="product-overlay"></div>
           </div>
@@ -190,22 +195,34 @@
         </div>
       {% empty %}
         <div class="col-12">
-          <p class="text-center text-muted">No se encontraron productos.</p>
+          <div class="empty-state-aesthetic">
+            <div class="empty-state-icon">
+              <i class="fas fa-heart" aria-hidden="true"></i>
+            </div>
+            <h3 class="empty-state-title">No encontramos lo que buscabas</h3>
+            <p class="empty-state-subtitle">
+              Pero no te preocupes, nuestras artesanas crean nuevas piezas cada día. 
+              ¡Vuelve pronto para descubrir más tesoros hechos a mano!
+            </p>
+            <a href="{% url 'home' %}" class="btn-primary-aesthetic empty-state-cta">
+              <i class="fas fa-redo me-2"></i>Ver todos los productos
+            </a>
+          </div>
         </div>
       {% endfor %}
     </div>
 
     <!-- 📑 Paginación -->
-    {% if is_paginated %}
+    {% if page_obj.has_other_pages %}
       <nav class="pagination justify-content-center mt-4" aria-label="Paginación">
         {% if page_obj.has_previous %}
-          <a class="btn btn-outline-success me-2" href="?page={{ page_obj.previous_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Anterior</a>
+          <a class="btn btn-outline-success me-2" href="?page={{ page_obj.previous_page_number }}&q={{ current_filters.q }}&material={{ current_filters.material }}&color={{ current_filters.color }}&price_min={{ current_filters.price_min }}&price_max={{ current_filters.price_max }}">Anterior</a>
         {% endif %}
 
         <span class="align-self-center mx-2">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
 
         {% if page_obj.has_next %}
-          <a class="btn btn-outline-success ms-2" href="?page={{ page_obj.next_page_number }}&material={{ current_filters.material }}&color={{ current_filters.color }}&precio_min={{ current_filters.precio_min }}&precio_max={{ current_filters.precio_max }}">Siguiente</a>
+          <a class="btn btn-outline-success ms-2" href="?page={{ page_obj.next_page_number }}&q={{ current_filters.q }}&material={{ current_filters.material }}&color={{ current_filters.color }}&price_min={{ current_filters.price_min }}&price_max={{ current_filters.price_max }}">Siguiente</a>
         {% endif %}
       </nav>
     {% endif %}
@@ -215,8 +232,9 @@
 <script>
 function agregarAFavoritos(btn, nombreProducto) {
   const productoId = btn.getAttribute('data-producto-id');
+  const currentLang = document.documentElement.lang || 'es';
   
-  fetch(`/favoritos/toggle/${productoId}/`, {
+  fetch(`/${currentLang}/favoritos/toggle/${productoId}/`, {
     method: 'POST',
     headers: {
       'X-CSRFToken': getCookie('csrftoken'),
@@ -227,14 +245,47 @@ function agregarAFavoritos(btn, nombreProducto) {
   .then(response => response.json())
   .then(data => {
     if (data.favorito) {
-      mostrarNotificacion(`"${nombreProducto}" se ha agregado a favoritos`);
-      btn.textContent = '★ En Favoritos';
+      mostrarNotificacion(`"${nombreProducto}" añadido a favoritos ❤️`);
+      btn.innerHTML = '<i class="fas fa-heart me-2"></i>En Favoritos';
       btn.style.backgroundColor = '#2C5F4F';
+      btn.setAttribute('aria-pressed', 'true');
+      
+      // Actualizar badge de favoritos en navbar
+      const favBadge = document.querySelector('.fa-heart').parentElement.querySelector('.badge');
+      if (favBadge) {
+        const currentCount = parseInt(favBadge.textContent) || 0;
+        favBadge.textContent = currentCount + 1;
+        favBadge.style.display = 'inline-block';
+      } else {
+        // Crear badge si no existe
+        const favLink = document.querySelector('.fa-heart').parentElement;
+        const newBadge = document.createElement('span');
+        newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill';
+        newBadge.style.cssText = 'background-color: #FF6B9D; color: white; font-size: 10px; padding: 3px 6px;';
+        newBadge.textContent = '1';
+        favLink.appendChild(newBadge);
+      }
     } else {
-      mostrarNotificacion(`"${nombreProducto}" se ha quitado de favoritos`);
-      btn.textContent = 'Agregar a Favoritos';
+      mostrarNotificacion(`"${nombreProducto}" quitado de favoritos`);
+      btn.innerHTML = '<i class="far fa-heart me-2"></i>Agregar a Favoritos';
       btn.style.backgroundColor = '';
+      btn.setAttribute('aria-pressed', 'false');
+      
+      // Actualizar badge de favoritos en navbar
+      const favBadge = document.querySelector('.fa-heart').parentElement.querySelector('.badge');
+      if (favBadge) {
+        const currentCount = parseInt(favBadge.textContent) || 0;
+        if (currentCount > 1) {
+          favBadge.textContent = currentCount - 1;
+        } else {
+          favBadge.remove();
+        }
+      }
     }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    mostrarNotificacion('Error al actualizar favoritos');
   });
 }
 
@@ -268,7 +319,11 @@ function getCookie(name) {
 }
 
 function agregarAlCarrito(productoId, nombreProducto) {
-  fetch(`/es/carrito/agregar/${productoId}/`, {
+  // Construir URL dinámica para soportar todos los idiomas
+  const currentLang = document.documentElement.lang || 'es';
+  const agregarUrl = `/${currentLang}/carrito/agregar/${productoId}/`;
+  
+  fetch(agregarUrl, {
     method: 'POST',
     headers: {
       'X-CSRFToken': getCookie('csrftoken'),

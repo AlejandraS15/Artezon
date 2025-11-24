@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 from .views import (
     home,
-    landing_page,
     register_view,
     email_login_view,
     CustomLogoutView,

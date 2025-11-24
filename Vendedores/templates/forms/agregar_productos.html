@@ -2,9 +2,9 @@
 {% load i18n %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12">
             <h2 class="mb-4 text-center" style="color: var(--verde-pino); font-family: 'Playfair Display', serif;">{% trans "Añadir Producto" %}</h2>
             
             <form method="post" enctype="multipart/form-data" id="producto-form" class="unified-form">
@@ -29,9 +29,16 @@
                 
                 <div class="mb-3">
                     <button type="button" class="btn-secondary-action" onclick="calcularPrecioSugerido()">
-                        {% trans "Mostrar precio sugerido" %}
+                        {% trans "Calcular precio sugerido" %}
                     </button>
-                    <input type="text" id="precio-sugerido" class="form-control mt-2" placeholder="{% trans 'Precio sugerido' %}" readonly style="display:none; border: 1.5px solid var(--dorado); background: #FAFAF9;">
+                    <div class="input-group mt-2" id="precio-sugerido-container" style="display:none;">
+                        <span class="input-group-text" style="background: var(--dorado); color: white; font-weight: 600;">{% trans "Sugerido" %}</span>
+                        <input type="number" id="precio-sugerido" class="form-control" placeholder="{% trans 'Precio sugerido' %}" style="border: 1.5px solid var(--dorado); background: #FAFAF9; font-weight: 600; font-size: 16px;">
+                        <button type="button" class="btn" style="background: var(--verde-pino); color: white;" onclick="aplicarPrecioSugerido()" title="{% trans 'Aplicar al precio' %}">
+                            <i class="fas fa-check"></i> {% trans "Aplicar" %}
+                        </button>
+                    </div>
+                    <small class="text-muted d-block mt-1" id="precio-hint" style="display:none !important;">{% trans "Puedes modificar el precio sugerido antes de aplicarlo" %}</small>
                 </div>
                 
                 <div class="form-actions">
@@ -53,25 +60,66 @@ function calcularPrecioSugerido() {
     const experiencia = document.getElementById("id_experiencia")?.value;
     const cantidad_material = parseFloat(document.getElementById("id_cantidad_material")?.value) || 0;
 
-    // Valores por KG
+    if (!material || horas === 0 || !experiencia || cantidad_material === 0) {
+        alert('Por favor completa todos los campos (Material, Horas, Experiencia, Cantidad de material) para calcular el precio sugerido.');
+        return;
+    }
+
+    // Valores por KG del material
     const material_factor = {
-        'algodon': 12000,   // ejemplo: $10.000 por KG
-        'lana': 24000,      // ejemplo: $22.000 por KG
-        'cuero': 60000,     // ejemplo: $60.000 por KG
-    };
-    const experiencia_factor = {
-        'principiante': 1.0,
-        'intermedio': 1.5,
-        'experto': 2.0,
+        'algodon': 12000,
+        'lana': 24000,
+        'cuero': 60000,
     };
 
-    const base = 1000;
-    const costo_material = (material_factor[material] || 0) * cantidad_material;
-    const precio = base + (horas * 8000) + costo_material * (experiencia_factor[experiencia] || 1);
+    // Costo del material usado (precio base)
+    const precio_base = (material_factor[material] || 0) * cantidad_material;
+    
+    // Obtener el precio que el usuario puso (si ya existe)
+    const precio_usuario = parseFloat(document.getElementById("id_price")?.value) || precio_base;
+    
+    // Fórmula: Precio usuario + 25% por cada hora invertida
+    // Si no hay precio usuario, usar precio_base como referencia
+    const precio_referencia = precio_usuario > 0 ? precio_usuario : precio_base;
+    const precio_final = Math.round(precio_referencia + (precio_referencia * 0.25 * horas));
 
     const input = document.getElementById("precio-sugerido");
-    input.value = "Sugerido: $" + precio.toFixed(2);
-    input.style.display = "block";
+    const container = document.getElementById("precio-sugerido-container");
+    const hint = document.getElementById("precio-hint");
+    
+    input.value = precio_final;
+    container.style.display = "flex";
+    hint.style.display = "block";
+    
+    // Mostrar desglose en consola para debugging
+    console.log('Precio base material:', precio_base);
+    console.log('Precio usuario:', precio_usuario);
+    console.log('Horas:', horas);
+    console.log('Precio final:', precio_final);
+    
+    // Aplicar automáticamente al campo precio
+    document.getElementById("id_price").value = precio_final;
+}
+
+function aplicarPrecioSugerido() {
+    const precioSugerido = document.getElementById("precio-sugerido").value;
+    if (precioSugerido) {
+        document.getElementById("id_price").value = precioSugerido;
+        // Feedback visual
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check-double"></i> Aplicado';
+        btn.style.background = 'var(--sage)';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = 'var(--verde-pino)';
+        }, 1500);
+    }
+}
+
+// Formatear precio con puntos de miles
+function formatearPrecio(valor) {
+    return valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 // Previsualización de imagen
@@ -92,6 +140,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 preview.src = "#";
                 preview.style.display = "none";
             }
+        });
+    }
+
+    // Formatear campo precio con puntos de miles mientras se escribe
+    const precioInput = document.getElementById("id_price");
+    if (precioInput) {
+        precioInput.addEventListener("blur", function() {
+            let valor = this.value.replace(/\./g, ""); // Quitar puntos existentes
+            if (valor && !isNaN(valor)) {
+                this.value = formatearPrecio(valor);
+            }
+        });
+        
+        precioInput.addEventListener("focus", function() {
+            // Quitar formato al enfocar para facilitar edición
+            this.value = this.value.replace(/\./g, "");
         });
     }
 });

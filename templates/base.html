@@ -37,7 +37,7 @@
         <div class="container-fluid">
 
             <!-- Logo -->
-            <a href="/" class="navbar-brand d-flex align-items-center">
+            <a href="{% url 'login' %}" class="navbar-brand d-flex align-items-center">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" style="max-height: 60px; width: auto;">
             </a>
 
@@ -61,8 +61,10 @@
                     <li class="nav-item">
                         <a class="nav-link text-white {% if request.resolver_match.url_name == 'agregar_producto' %}active{% endif %}" href="{% url 'agregar_producto' %}">{% trans "Agregar producto" %}</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" href="{% url 'edit_profile' %}">{% trans "Editar perfil" %}</a>
+                    <li class="nav-item ms-3">
+                        <a class="nav-link text-white {% if request.resolver_match.url_name == 'profile' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" href="{% url 'profile' %}" aria-label="{% trans 'Ver perfil' %}">
+                            <i class="fas fa-user-circle fa-lg" aria-hidden="true"></i>
+                        </a>
                     </li>
                     {% endif %}
 
@@ -81,16 +83,26 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="langDropdown">
                             <li>
-                                <a class="dropdown-item {% if LANGUAGE_CODE == 'es' %}active{% endif %}" href="/es/">
-                                    <i class="fas fa-check me-2 {% if LANGUAGE_CODE != 'es' %}invisible{% endif %}" aria-hidden="true"></i>
-                                    Español
-                                </a>
+                                <form action="{% url 'set_language' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input name="next" type="hidden" value="{{ request.get_full_path }}" />
+                                    <input name="language" type="hidden" value="es" />
+                                    <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == 'es' %}active{% endif %}" style="border: none; background: none; width: 100%; text-align: left;">
+                                        <i class="fas fa-check me-2 {% if LANGUAGE_CODE != 'es' %}invisible{% endif %}" aria-hidden="true"></i>
+                                        Español
+                                    </button>
+                                </form>
                             </li>
                             <li>
-                                <a class="dropdown-item {% if LANGUAGE_CODE == 'en' %}active{% endif %}" href="/en/">
-                                    <i class="fas fa-check me-2 {% if LANGUAGE_CODE != 'en' %}invisible{% endif %}" aria-hidden="true"></i>
-                                    English
-                                </a>
+                                <form action="{% url 'set_language' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input name="next" type="hidden" value="{{ request.get_full_path }}" />
+                                    <input name="language" type="hidden" value="en" />
+                                    <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == 'en' %}active{% endif %}" style="border: none; background: none; width: 100%; text-align: left;">
+                                        <i class="fas fa-check me-2 {% if LANGUAGE_CODE != 'en' %}invisible{% endif %}" aria-hidden="true"></i>
+                                        English
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </li>
@@ -98,6 +110,18 @@
                     <!-- External API -->
                      <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'external_api' %}">{% trans "API Externa" %}</a>
+                    </li>
+
+                    <!-- Favoritos -->
+                    <li class="nav-item ms-3 position-relative">
+                        <a href="{% url 'favoritos' %}" class="nav-link text-white position-relative" aria-label="{% trans 'Ver favoritos' %}">
+                            <i class="fas fa-heart fa-lg" aria-hidden="true"></i>
+                            {% if request.session.favoritos %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background-color: #FF6B9D; color: white; font-size: 10px; padding: 3px 6px;" aria-label="{{ request.session.favoritos|length }} {% trans 'favoritos' %}">
+                                {{ request.session.favoritos|length }}
+                            </span>
+                            {% endif %}
+                        </a>
                     </li>
 
                     <!-- Carrito -->
@@ -114,7 +138,7 @@
                     
                     {% if quote %}
                     <li class="nav-item d-flex align-items-center">
-                        <span style="font-size: 1.1rem; opacity: 0.9; cursor: default; pointer-events: none; color: #584738; margin-left: 20px;"><b>"{{ quote }}"</b></span>
+                        <span class="quote-text" style="font-size: 1.1rem; cursor: default; pointer-events: none; color: white; margin-left: 20px; font-weight: 600; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); transition: all 0.3s ease;"><b>"{{ quote }}"</b></span>
                     </li>
                     {% endif %}
 
@@ -145,28 +169,48 @@
 </script>
 
 <!-- Contenido dinámico -->
-<main class="main-container mt-5" id="main-content" tabindex="-1">
+<main class="main-container" id="main-content" tabindex="-1">
     {% block content %}
     {% endblock %}
 </main>
 
 <!-- Footer -->
-<footer class="footer-modern">
+<footer class="footer-modern-compact">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <p class="footer-text mb-3">
-                    {% trans "Donde cada hilo cuenta una historia. Conecta con artesanas y descubre piezas únicas hechas con amor" %}
-                </p>
-                <p class="mb-0">&copy; 2025 Artezon. {% trans "Todos los derechos reservados" %}</p>
-            </div>
+        <div class="footer-content-compact">
+            <h3 class="footer-title-compact">✧ {% trans "Únete a nuestra comunidad" %} ✧</h3>
+            <p class="footer-subtitle-compact">
+                {% trans "Recibe inspiración, nuevas creaciones y ofertas especiales" %}
+            </p>
+            <p class="footer-text-compact">
+                {% trans "Donde cada hilo cuenta una historia. Conecta con artesanas y descubre piezas únicas hechas con amor" %}
+            </p>
         </div>
     </div>
 </footer>
 
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://kit.fontawesome.com/a2e0e9f6b9.js" crossorigin="anonymous"></script>
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a2e0e9f6b9.js" crossorigin="anonymous"></script>
+    
+    <!-- Efecto hover para la frase -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const quoteText = document.querySelector('.quote-text');
+        if (quoteText) {
+            quoteText.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.textShadow = '0 0 20px rgba(255, 255, 255, 0.9), 2px 2px 8px rgba(0, 0, 0, 0.5)';
+                this.style.letterSpacing = '1px';
+            });
+            quoteText.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.textShadow = '2px 2px 4px rgba(0, 0, 0, 0.3)';
+                this.style.letterSpacing = 'normal';
+            });
+        }
+    });
+    </script>
 
 </body>
 </html>

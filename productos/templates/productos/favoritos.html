@@ -28,7 +28,19 @@
         </div>
       {% empty %}
         <div class="col-12">
-          <p class="text-center text-muted">No tienes productos favoritos.</p>
+          <div class="empty-state-aesthetic">
+            <div class="empty-state-icon">
+              <i class="fas fa-heart-broken" aria-hidden="true"></i>
+            </div>
+            <h3 class="empty-state-title">Aún no tienes favoritos</h3>
+            <p class="empty-state-subtitle">
+              Guarda las creaciones que más te gusten para encontrarlas fácilmente. 
+              Tu corazón sabrá cuáles son las piezas perfectas para ti.
+            </p>
+            <a href="{% url 'home' %}" class="btn-primary-aesthetic empty-state-cta">
+              <i class="fas fa-heart me-2"></i>Explorar productos
+            </a>
+          </div>
         </div>
       {% endfor %}
     </div>
@@ -52,7 +64,7 @@
         max-width: 1440px;
         margin: 0 auto;
         padding: 140px 40px 100px;
-        background: var(--blanco-cremoso);
+        background: #FFFFFF;
     }
     .masonry-grid {
         column-count: 4;
@@ -164,7 +176,9 @@
 <script>
 function toggleFavorite(btn) {
     const productoId = btn.getAttribute('data-producto-id');
-    fetch(`/favoritos/toggle/${productoId}/`, {
+    const languageCode = '{{ LANGUAGE_CODE }}';
+    
+    fetch(`/${languageCode}/productos/favoritos/toggle/${productoId}/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
@@ -174,15 +188,16 @@ function toggleFavorite(btn) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.favorito) {
-            btn.textContent = '★';
-            btn.classList.add('favorito');
-        } else {
-            btn.textContent = '♡';
-            btn.classList.remove('favorito');
-            // Recargar página para quitar el producto de la vista
+        if (data.success) {
+            // Recargar página para actualizar la lista de favoritos
             location.reload();
+        } else {
+            alert(data.message || 'Error al actualizar favoritos');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al actualizar favoritos');
     });
 }
 

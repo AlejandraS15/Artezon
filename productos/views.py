@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 from urllib.parse import quote
 
 from .product_form import ProductForm
@@ -124,11 +125,22 @@ def home(request):
     if price_max:
         productos = productos.filter(price__lte=price_max)
 
+    # Paginación
+    paginator = Paginator(productos, 20)  # 20 productos por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     materiales = Product.objects.values_list("material", flat=True).distinct()
     colores = Product.objects.values_list("color", flat=True).distinct()
 
+    # Para badges de productos nuevos
+    from datetime import timedelta
+    from django.utils import timezone
+    seven_days_ago = timezone.now() - timedelta(days=7)
+
     context = {
-        "productos": productos,
+        "page_obj": page_obj,
+        "productos": page_obj,
         "current_filters": {
             "q": query,
             "material": material,
@@ -138,6 +150,7 @@ def home(request):
         },
         "materiales": materiales,
         "colores": colores,
+        "seven_days_ago": seven_days_ago,
     }
     return render(request, "productos/home.html", context)
 
@@ -171,11 +184,6 @@ def favoritos(request):
     favoritos_ids = request.session.get("favoritos", [])
     productos = Product.objects.filter(id__in=favoritos_ids)
     return render(request, "productos/favoritos.html", {"productos": productos})
-
-
-def landing_page(request):
-    """Landing page inicial con botones de registro e inicio de sesión."""
-    return render(request, "productos/landing.html", {"is_landing": True})
 
 
 # ────────── VISTAS USUARIO ──────────
@@ -231,15 +239,38 @@ def edit_profile(request):
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         seller_form = SellerProfileForm(request.POST, request.FILES, instance=seller_profile)
 
-        forms_valid = user_form.is_valid() and profile_form.is_valid() and seller_form.is_valid()
-        if forms_valid:
+        # Validar cada formulario individualmente para mejor debugging
+        user_valid = user_form.is_valid()
+        profile_valid = profile_form.is_valid()
+        seller_valid = seller_form.is_valid()
+        
+        if not user_valid:
+            print("Errores en user_form:", user_form.errors)
+        if not profile_valid:
+            print("Errores en profile_form:", profile_form.errors)
+        if not seller_valid:
+            print("Errores en seller_form:", seller_form.errors)
+        
+        if user_valid and profile_valid and seller_valid:
+            # Guardar usuario
             user_form.save()
-            profile_form.save()
-            seller = seller_form.save(commit=False)
-            seller.user = user
-            seller.save()
+            
+            # Guardar perfil
+            saved_profile = profile_form.save(commit=False)
+            saved_profile.user = user
+            saved_profile.save()
+            profile_form.save_m2m()  # Guardar relaciones many-to-many (colores_favoritos)
+            
+            # Guardar vendedor
+            if seller_profile or seller_form.cleaned_data:
+                seller = seller_form.save(commit=False)
+                seller.user = user
+                seller.save()
+            
             messages.success(request, "Perfil actualizado con éxito")
             return redirect("profile")
+        else:
+            messages.error(request, "Por favor corrige los errores en el formulario")
     else:
         user_form = UserUpdateForm(instance=user)
         profile_form = ProfileUpdateForm(instance=profile)

@@ -99,7 +99,7 @@ class ProfileUpdateForm(forms.ModelForm):
     )
     tipo_lana = forms.ChoiceField(
         label="Tipo de lana favorita",
-        choices=Profile.TIPO_LANA_CHOICES,
+        choices=[('', 'Seleccionar...')] + list(Profile.TIPO_LANA_CHOICES),
         required=False,
         widget=forms.Select(attrs={"class": "form-select"})
     )

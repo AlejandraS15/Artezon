@@ -100,27 +100,32 @@
                             <span style="color: var(--dorado); font-weight: 700;">{{ total|format_cop }} COP</span>
                         </h4>
                     </div>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
                         <a href="{% url 'home' %}" class="btn" style="border: 2px solid var(--verde-pino); color: var(--verde-pino); background: white; padding: 10px 24px; border-radius: 8px; font-weight: 600;">
                             <i class="fas fa-arrow-left me-2"></i>{% trans "Seguir comprando" %}
                         </a>
                         <a href="{% url 'limpiar_carrito' %}" class="btn" style="background: var(--dorado); color: white; padding: 10px 24px; border-radius: 8px; font-weight: 600;">
                             <i class="fas fa-trash me-2"></i>{% trans "Vaciar carrito" %}
                         </a>
+                        <a href="{% url 'comprar_carrito' %}" class="btn" style="background: linear-gradient(135deg, var(--verde-pino), var(--verde-oscuro)); color: white; padding: 10px 24px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 15px rgba(44, 95, 79, 0.3);">
+                            <i class="fas fa-credit-card me-2"></i>{% trans "Proceder al Pago" %}
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     {% else %}
-        <div class="card shadow-sm border-0">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-shopping-cart fa-4x mb-3" style="color: var(--verde-pino); opacity: 0.3;"></i>
-                <h4 style="color: var(--verde-oscuro);">{% trans "Tu carrito está vacío" %}</h4>
-                <p class="text-muted mb-4">{% trans "Explora nuestros productos y agrega lo que te guste" %}</p>
-                <a href="{% url 'home' %}" class="btn" style="background: var(--verde-pino); color: white; padding: 12px 32px; border-radius: 8px; font-weight: 600;">
-                    <i class="fas fa-shopping-bag me-2"></i>{% trans "Ver productos" %}
-                </a>
+        <div class="empty-state-aesthetic">
+            <div class="empty-state-icon">
+                <i class="fas fa-shopping-basket" aria-hidden="true"></i>
             </div>
+            <h3 class="empty-state-title">{% trans "Tu canasta está vacía" %}</h3>
+            <p class="empty-state-subtitle">
+                {% trans "Explora las hermosas creaciones hechas a mano por nuestras artesanas. Cada pieza es única y cuenta una historia." %}
+            </p>
+            <a href="{% url 'home' %}" class="btn-primary-aesthetic empty-state-cta">
+                <i class="fas fa-shopping-bag me-2"></i>{% trans "Descubrir productos" %}
+            </a>
         </div>
     {% endif %}
 </div>

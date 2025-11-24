@@ -3,9 +3,9 @@
 {% load currency_filters %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
+<div class="container mt-2">
+    <div class="row">
+        <div class="col-12">
             <!-- Header con botón de agregar -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">{% trans "Mis Productos" %}</h2>
@@ -14,41 +14,85 @@
                 </a>
             </div>
 
+            <!-- Filtros y búsqueda -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">{% trans "Buscar por nombre" %}</label>
+                            <input type="text" name="search" class="form-control" placeholder="{% trans 'Nombre del producto' %}" value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">{% trans "Estado" %}</label>
+                            <select name="estado" class="form-select">
+                                <option value="">{% trans "Todos" %}</option>
+                                <option value="activo" {% if estado_filter == 'activo' %}selected{% endif %}>{% trans "Activos" %}</option>
+                                <option value="inactivo" {% if estado_filter == 'inactivo' %}selected{% endif %}>{% trans "Inactivos" %}</option>
+                                <option value="sin_stock" {% if estado_filter == 'sin_stock' %}selected{% endif %}>{% trans "Sin stock" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">{% trans "Precio mín" %}</label>
+                            <input type="number" name="precio_min" class="form-control" placeholder="0" value="{{ precio_min }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">{% trans "Precio máx" %}</label>
+                            <input type="number" name="precio_max" class="form-control" placeholder="999999" value="{{ precio_max }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">{% trans "Ordenar por" %}</label>
+                            <select name="orden" class="form-select">
+                                <option value="-created_at" {% if orden == '-created_at' %}selected{% endif %}>{% trans "Más reciente" %}</option>
+                                <option value="created_at" {% if orden == 'created_at' %}selected{% endif %}>{% trans "Más antiguo" %}</option>
+                                <option value="-price" {% if orden == '-price' %}selected{% endif %}>{% trans "Precio mayor" %}</option>
+                                <option value="price" {% if orden == 'price' %}selected{% endif %}>{% trans "Precio menor" %}</option>
+                                <option value="-stock" {% if orden == '-stock' %}selected{% endif %}>{% trans "Stock mayor" %}</option>
+                                <option value="stock" {% if orden == 'stock' %}selected{% endif %}>{% trans "Stock menor" %}</option>
+                                <option value="name" {% if orden == 'name' %}selected{% endif %}>{% trans "Nombre A-Z" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">{% trans "Filtrar" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- Estadísticas -->
-            <div class="row mb-4">
+            <div class="row mb-4 g-3">
                 <div class="col-md-4">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{% trans "Total Productos" %}</h5>
-                            <p class="display-4 text-primary">{{ total_productos }}</p>
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body d-flex flex-column justify-content-center" style="min-height: 180px;">
+                            <h5 class="card-title text-muted mb-3" style="font-size: 14px; font-weight: 600;">{% trans "Total Productos" %}</h5>
+                            <p class="display-4 mb-0" style="color: #3B82F6; font-weight: 700;">{{ total_productos }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{% trans "Productos Activos" %}</h5>
-                            <p class="display-4 text-success">{{ productos_activos }}</p>
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body d-flex flex-column justify-content-center" style="min-height: 180px;">
+                            <h5 class="card-title text-muted mb-3" style="font-size: 14px; font-weight: 600;">{% trans "Productos Activos" %}</h5>
+                            <p class="display-4 mb-0" style="color: var(--verde-pino); font-weight: 700;">{{ productos_activos }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{% trans "Valor Inventario" %}</h5>
-                            <p class="display-4 text-info">{{ valor_inventario|format_cop }} COP</p>
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body d-flex flex-column justify-content-center" style="min-height: 180px;">
+                            <h5 class="card-title text-muted mb-3" style="font-size: 14px; font-weight: 600;">{% trans "Valor Inventario" %}</h5>
+                            <p class="mb-0" style="color: #06B6D4; font-size: 2rem; font-weight: 700;">{{ valor_inventario|format_cop }} COP</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Lista de productos -->
-            <div class="row">
+            <div class="productos-grid-5col">
                 {% for producto in productos %}
-                    <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="producto-grid-item">
                         <div class="card h-100 shadow-sm">
                             {% if producto.imagen %}
-                                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{% trans 'Imagen de producto' %}" style="object-fit:cover; height:200px;">
+                                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{% trans 'Imagen de producto' %}" style="object-fit:cover; height:200px;" loading="lazy">
                             {% else %}
                                 <div class="card-img-top d-flex align-items-center justify-content-center" style="height:200px; background:#f5e9da;">
                                     <span class="text-muted">{% trans "Sin imagen" %}</span>
@@ -56,11 +100,26 @@
                             {% endif %}
                             <div class="card-body">
                                 <h5 class="card-title">{{ producto.name }}</h5>
+                                
+                                {% if producto.stock == 0 %}
+                                    <div class="alert alert-danger py-1 px-2 mb-2" style="font-size: 12px;">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>{% trans "Sin stock" %}
+                                    </div>
+                                {% elif producto.stock <= 5 %}
+                                    <div class="alert alert-warning py-1 px-2 mb-2" style="font-size: 12px;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{% trans "Stock bajo" %} ({{ producto.stock }})
+                                    </div>
+                                {% endif %}
+                                
                                 <p class="card-text mb-1"><strong>{% trans "Descripción:" %}</strong> {{ producto.description|truncatewords:10 }}</p>
                                 <p class="card-text mb-1"><strong>{% trans "Categoría:" %}</strong> {{ producto.category }}</p>
                                 <p class="card-text mb-1"><strong>{% trans "Material:" %}</strong> {{ producto.material }}</p>
                                 <p class="card-text mb-1"><strong>{% trans "Color:" %}</strong> {{ producto.color }}</p>
-                                <p class="card-text mb-1"><strong>{% trans "Stock:" %}</strong> {{ producto.stock }}</p>
+                                <p class="card-text mb-1"><strong>{% trans "Stock:" %}</strong> 
+                                    <span class="{% if producto.stock == 0 %}text-danger{% elif producto.stock <= 5 %}text-warning{% endif %}">
+                                        {{ producto.stock }}
+                                    </span>
+                                </p>
                                 <p class="card-text mb-1"><strong>{% trans "Precio:" %}</strong> {{ producto.price|format_cop }} COP</p>
                             </div>
                             <div class="card-footer bg-transparent border-0 d-flex gap-2">
@@ -77,6 +136,7 @@
                         </div>
                     </div>
                 {% empty %}
+                <div class="col-12">
                     <div class="col-12">
                         <div class="alert alert-info text-center">
                             <h4>{% trans "No tienes productos aún." %}</h4>
@@ -86,8 +146,38 @@
                             </a>
                         </div>
                     </div>
+                </div>
                 {% endfor %}
             </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Paginación de productos" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if precio_min %}&precio_min={{ precio_min }}{% endif %}{% if precio_max %}&precio_max={{ precio_max }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}">{% trans "Primera" %}</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if precio_min %}&precio_min={{ precio_min }}{% endif %}{% if precio_max %}&precio_max={{ precio_max }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}">{% trans "Anterior" %}</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if precio_min %}&precio_min={{ precio_min }}{% endif %}{% if precio_max %}&precio_max={{ precio_max }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}">{% trans "Siguiente" %}</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if precio_min %}&precio_min={{ precio_min }}{% endif %}{% if precio_max %}&precio_max={{ precio_max }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}">{% trans "Última" %}</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
         </div>
     </div>
 </div>
